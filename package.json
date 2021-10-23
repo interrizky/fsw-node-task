@@ -1,0 +1,40 @@
+{
+  "dependencies": {
+    "cryptr": "^6.0.2",
+    "dotenv": "^10.0.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "html": "^1.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^4.1.3",
+    "mongoose": "^6.0.12",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.14"
+  },
+  "name": "fsw_node_task",
+  "description": "Task FSW NodeJS dengan authorization dan authentication",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/interrizky/fsw-node-task.git"
+  },
+  "keywords": [
+    "NodeJS",
+    "ExpressJS",
+    "MongoDB",
+    "Mongoose",
+    "Auth"
+  ],
+  "author": "interrizky",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/interrizky/fsw-node-task/issues"
+  },
+  "homepage": "https://github.com/interrizky/fsw-node-task#readme"
+}
