@@ -1,3 +1,9 @@
+body {
+  width: 100%!important;
+  height: 100%!important;
+  background-color: whitesmoke;
+}
+
 #login {     
     width: 300px;           /* Set this to your convenience */
     height: 250px;          /* Set this to your convenience */
