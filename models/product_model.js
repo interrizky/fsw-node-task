@@ -11,14 +11,19 @@ var schemaOptions = {
   }
 };
 
-var userSchema = new Mongoose.Schema({
-  username: { type: String },
-  password: { type: String },  
-  email: { type: String },
-  address: { type: String },
-  age: { type: String }
-}, schemaOptions)
+var productSchema = new Mongoose.Schema({
+	name: { type: String },
+  price: { type: String },
+  quantity: { type: String },
+	desc: { type: String },
+  owner: { type: String },
+	img:
+	{
+		data: Buffer,
+		contentType: String
+	}
+}, schemaOptions);
 
-// user_registration adalah nama schema / tabel di MangoDB-nya
-const products = Mongoose.model('products', userSchema);
+// products adalah nama schema / tabel di MangoDB-nya
+const products = Mongoose.model('products', productSchema);
 module.exports = products;
