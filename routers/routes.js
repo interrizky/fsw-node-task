@@ -22,20 +22,26 @@ routes.get('/dashboard-user', userController.dashboardUser);
 // halaman add products as user
 routes.get('/add-data', userController.addData);
 
-// function post-save data product to deired destination "./uploads"
-// customFile adalah selector field untuk upload
-routes.post('/post-data', upload.single('customFile'), productController.postData);
-
-// router.get('/getSingleFiles', getallSingleFiles);
-
-// function to populate data to tables
-routes.get('/get-data', productController.getData);
-
 // login as guest
 routes.post('/login-guest', userController.loginGuest);
 
 // halaman login as guest
 routes.get('/dashboard-guest', userController.dashboardGuest);
+
+// function post-save data product to desired destination "./uploads" and database
+// customFile adalah selector field untuk upload
+routes.post('/post-data', upload.single('customFile'), productController.postData);
+
+// populate data to table (for user)
+routes.get('/list-user-products', productController.listUserTable);
+
+// populate search data to table
+routes.get('/search-data/:param', productController.searchDataTable)
+
+// populate data to table (for guest)
+routes.get('/list-guest-products', productController.listGuestTable);
+
+// router.get('/getSingleFiles', getallSingleFiles);
 
 
 //Export to index.JS

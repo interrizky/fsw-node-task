@@ -99,7 +99,8 @@ document.querySelector('#owner').value = JSON.parse(getCookies('user-data')).use
 
 /* btn back to dashboard */
 document.querySelector('#btnBack').addEventListener('click', (event) => {
-  location.href = 'http://localhost:9702/dashboard-user'
+  window.location.href = '/dashboard-user'
 })
+
 </script>
 </html>

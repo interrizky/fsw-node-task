@@ -6,25 +6,115 @@ const fs = require('fs');
 const path = require('path');
 
 exports.postData = async(request, response) => {
-  console.log(request)
-  console.log(request.body);
-
   try {
-    // const file = new SingleFile({
-    //     fileName: req.file.originalname,
-    //     filePath: req.file.path,
-    //     fileType: req.file.mimetype,
-    //     fileSize: fileSizeFormatter(req.file.size, 2) // 0.00
-    // });
-    // await file.save();
-    const file = request.file;
-    console.log(file);
-    response.status(201).send('File Uploaded Successfully');
+    const dataOptions = new productModel({
+        name: request.body.product,
+        price: request.body.price,
+        quantity: request.body.quantity,
+        desc: request.body.description,
+        owner: request.body.owner,      
+        fileName: request.file.originalname,
+        filePath: request.file.path,
+        fileType: request.file.mimetype,
+        fileSize: fileSizeFormatter(request.file.size, 2) // 0.00
+    });
+    // const file = request.file;
+    // console.log(file);    
+    const posting = await dataOptions.save();
+    if( posting !== null || posting === undefined ) {
+      response.status(201).send({
+        message: 'File Uploaded Successfully',
+        result: dataOptions
+      });
+    }
   } catch {
     response.status(400).send(error.message);
   }
 }
 
-exports.getData = (request, response) => {
-  console.log(request);
+const fileSizeFormatter = (bytes, decimal) => {
+    if(bytes === 0){
+        return '0 Bytes';
+    }
+    const dm = decimal || 2;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'YB', 'ZB'];
+    const index = Math.floor(Math.log(bytes) / Math.log(1000));
+    return parseFloat((bytes / Math.pow(1000, index)).toFixed(dm)) + ' ' + sizes[index];
+}
+
+exports.listUserTable = (request, response) => {
+  productModel.find({ owner: request.headers.owner.toString() }).sort( {_id: -1} ).exec()
+    .then(resp => {
+    response.send({
+      message: "Displaying Current Collections From MongoDB",
+      result: resp
+    })
+    })
+    .catch(err => {
+    response.send({
+      message: "Failed To Read Data",
+      result: err
+    })
+  })
+}
+
+exports.listGuestTable = (request, response) => {
+  productModel.find().sort( {_id: -1} ).exec()
+    .then(resp => {
+    response.send({
+      message: "Displaying Current Collections From MongoDB",
+      result: resp
+    })
+    })
+    .catch(err => {
+    response.send({
+      message: "Failed To Read Data",
+      result: err
+    })
+  })
+}
+
+exports.searchDataTable = (request, response) => {
+  let owner = request.headers.owner
+  let param = request.params.param
+
+  console.log(owner, param)
+
+  if( owner == 'guest' || owner == "guest" ) {
+    productModel.find({ $or: [
+      {name: {$regex: '.*' + param.toString() + '.*'}}, 
+      {desc: {$regex: '.*' + param.toString() + '.*'}}, 
+      {price: {$regex: '.*' + param.toString() + '.*'}}, 
+      {owner: {$regex: '.*' + param.toString() + '.*'}}
+    ]}).exec()
+    .then(resp => {
+      response.send({
+        message: "Displaying Current Collections From MongoDB",
+        result: resp
+      })
+    }).catch(err => {
+      response.send({
+        message: "Failed To Read Data",
+        result: err
+      })
+    })
+  } else {
+    productModel.find({owner: owner.toString(), $or: [
+      {name: {$regex: '.*' + param.toString() + '.*'}}, 
+      {desc: {$regex: '.*' + param.toString() + '.*'}}, 
+      {price: {$regex: '.*' + param.toString() + '.*'}}, 
+      {owner: {$regex: '.*' + param.toString() + '.*'}}
+    ]}).exec()
+    .then(resp => {
+      response.send({
+        message: "Displaying Current Collections From MongoDB",
+        result: resp
+      })
+    }).catch(err => {
+      response.send({
+        message: "Failed To Read Data",
+        result: err
+      })
+    })    
+  }
 }
