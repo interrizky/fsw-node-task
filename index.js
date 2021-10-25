@@ -2,12 +2,14 @@ const express = require('express');
 const app = express();
 const port = 9702;
 
-const fs = require('fs');
-const path = require('path');
 const formdata = require('form-data');
 
-const multer = require('multer'); 
-const upload = multer();
+const path = require('path');
+const cors = require('cors');
+
+const multer = require('multer');
+
+const {upload} = require('./helpers/file_helper');
 
 const morgan = require('morgan'); 
 app.use(morgan('dev'));
@@ -19,13 +21,16 @@ app.use(express.urlencoded( {extended: true} ))
 // for parsing application/json
 app.use(express.json())
 // for parsing multipart/form-data
-app.use(upload.array()); 
+// app.use(upload.array()); 
+
+app.use(cors());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Setting Up FE display folder
 app.set('views', './views') // specify the views directory
 app.set('view engine', 'ejs') // register the template engine
 
-// Reading CSS Folders & Files in Public Folder
+// Reading Folders & Files in Public Folder
 app.use(express.static('public'))
 
 //Routes Connection - MongoDB
@@ -35,14 +40,3 @@ connMongoDB();
 // Router
 const router = require('./routers/routes')
 app.use(router);
-
-//Upload Files to Mongo
-// const storage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         cb(null, 'uploads')
-//     },
-//     filename: (req, file, cb) => {
-//         cb(null, file.fieldname + '-' + Date.now())
-//     }
-// });
-// const upload = multer({ storage });

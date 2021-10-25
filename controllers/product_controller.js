@@ -1,39 +1,28 @@
 const productModel = require('../models/product_model');
+
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 
-exports.postData = (request, response) => {
+exports.postData = async(request, response) => {
+  console.log(request)
   console.log(request.body);
-  console.log(request.body.product);
-  console.log(request.body.price);
-  console.log(request.body.quantity);
-  console.log(request.body.customFile);
-  console.log(request.body.owner);
-  console.log(request.body.description);
 
-    // for(var pair of request.body.entries()) {
-    //   console.log(pair[0]+', '+pair[1]);
-    // }  
-
-  // let obj = {
-  //   name: request.body.name,
-  //   price: request.body.price,
-  //   quantity: request.body.quantity,
-  //   desc: request.body.desc,
-  //   owner: request.body.owner,
-  //   img: {
-  //     data: fs.readFileSync(path.join(__dirname + '/uploads/' + request.file.filename)),
-  //     contentType: 'image/png'
-  //   }
-  // }
-
-  // productModel.create(obj, (err, item) => {
-  //     if (err) { 
-  //       console.log(err); 
-  //     } else { 
-  //       response.redirect('/add-data'); 
-  //       // atau response.send();
-  //     }
-  // })
+  try {
+    // const file = new SingleFile({
+    //     fileName: req.file.originalname,
+    //     filePath: req.file.path,
+    //     fileType: req.file.mimetype,
+    //     fileSize: fileSizeFormatter(req.file.size, 2) // 0.00
+    // });
+    // await file.save();
+    const file = request.file;
+    console.log(file);
+    response.status(201).send('File Uploaded Successfully');
+  } catch {
+    response.status(400).send(error.message);
+  }
 }
 
 exports.getData = (request, response) => {

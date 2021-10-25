@@ -1,6 +1,12 @@
 const express = require('express');
 const routes = express.Router();
 
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
+
+const {upload} = require('../helpers/file_helper');
+
 const userController = require('../controllers/user_controller')
 const productController = require('../controllers/product_controller')
 
@@ -16,8 +22,11 @@ routes.get('/dashboard-user', userController.dashboardUser);
 // halaman add products as user
 routes.get('/add-data', userController.addData);
 
-// function post-save data product to database
-routes.post('/post-data', productController.postData);
+// function post-save data product to deired destination "./uploads"
+// customFile adalah selector field untuk upload
+routes.post('/post-data', upload.single('customFile'), productController.postData);
+
+// router.get('/getSingleFiles', getallSingleFiles);
 
 // function to populate data to tables
 routes.get('/get-data', productController.getData);
