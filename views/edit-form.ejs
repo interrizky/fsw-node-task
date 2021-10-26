@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Data</title>
+  <link rel="icon" href="/images/binar-logos-text.png" sizes="128x128" type="image/gif/png">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">  
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="wrapper-alert m-2 p-2">
+      <div id="row-alert" class="alert alert-success alert-dismissible show my-3" role="alert">
+        This is a sucalert-success alert—check it out!
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>      
+      </div>      
+    </div>
+    <div class="wrapper-form m-2 p-4">
+      <h4 class="text-center font-weight-bold font-italic">ADD NEW PRODUCTS</h4>
+      <form action="/update-data" method="post" enctype="multipart/form-data">
+        <div class="form-group d-none">
+          <label for="owner">Owner</label>
+          <input type="text" class="form-control" id="owner" name="owner" placeholder="The Owner" style="display: none;" value=<%-owner%>>
+        </div>
+        <div class="form-group d-none">
+          <label for="owner">ID</label>
+          <input type="text" class="form-control" id="_id" name="_id" placeholder="The Owner" style="display: none;" value=<%-_id%>>
+        </div>        
+        <div class="form-group">
+          <label for="product">Product Name</label>
+          <input type="text" class="form-control" id="product" name="product" placeholder="Product Name" value=<%-name%>>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="price">Price Tag</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <div class="input-group-text" id="btnGroupAddon">
+                  <i class="fa fa-coins"></i>
+                </div>
+              </div>
+              <input type="text" class="form-control" id="price" name="price" placeholder="Price Tag" value=<%-price%>>
+            </div>
+          </div>          
+          <div class="form-group col-md-6">
+            <label for="quantity">Quantity</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <div class="input-group-text" id="btnGroupAddon">
+                  <i class="fa fa-sort-numeric-up"></i>
+                </div>
+              </div>
+              <input type="text" class="form-control" id="quantity" name="quantity" placeholder="Quantity" value=<%-quantity%>>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="custom-file-label">Upload File</label>
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" id="customFile" name="customFile">            
+            <label class="custom-file-label" for="customFile">Choose file</label>            
+          </div>    
+        </div>
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea class="form-control" id="description" name="description" rows="3" placeholder="Product Description"><%-desc%></textarea>
+        </div>                
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <button type="submit" id="btnUpdate" class="form-control btn btn-primary mb-2">Update</button>            
+          </div>
+          <div class="form-group col-md-6">
+            <button type="button" id="btnBack" class="form-control btn btn-secondary mb-2">Back</button>            
+          </div>
+        </div>
+      </form>    
+    </div>
+
+  </div>
+</body>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
+<script src="https://pro.fontawesome.com/releases/v5.10.0/js/all.js" integrity="sha384-G/ZR3ntz68JZrH4pfPJyRbjW+c0+ojii5f+GYiYwldYU69A+Ejat6yIfLSxljXxD" crossorigin="anonymous"></script>
+<script type="text/javascript">
+/* get Cookie */
+function getCookies(name) {
+  var nameEQ = name + "=";
+  var ca = document.cookie.split(';');
+  for(var i=0;i < ca.length;i++) {
+      var c = ca[i];
+      while (c.charAt(0)==' ') c = c.substring(1,c.length);
+      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+  }
+  return null;
+}
+
+/* set owner value */
+document.querySelector('#owner').value = JSON.parse(getCookies('user-data')).username;
+
+/* btn back to dashboard */
+document.querySelector('#btnBack').addEventListener('click', (event) => {
+  window.location.href = '/dashboard-user'
+})
+
+</script>
+</html>

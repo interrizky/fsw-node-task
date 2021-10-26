@@ -118,3 +118,86 @@ exports.searchDataTable = (request, response) => {
     })    
   }
 }
+
+exports.deleteData = (request, response) => {
+  let param = request.params.param;
+  // console.log(_id);
+  // console.log('Bearer ? '+newTokenAuth[0]);
+  // console.log('Token ? ' +newTokenAuth[1]);
+
+  productModel.deleteOne( { _id: param } )
+  .then(resp => {
+    response.send({
+      message: "Delete Success",
+      result: param
+    })
+  })
+  .catch(err => {
+    response.send({
+      message: "Failed to Delete Data",
+      result: err
+    })
+  })   
+}
+
+exports.displayData = async (request, response) => {
+  let param = await request.params.param;
+
+  productModel.findOne({ _id: param })
+  .then(resp => {
+    let options = {
+      _id:JSON.stringify(resp._id),
+      owner:JSON.stringify(resp.owner),
+      name:JSON.stringify(resp.name),
+      price:JSON.stringify(resp.price),
+      quantity:JSON.stringify(resp.quantity),
+      desc:JSON.stringify(resp.desc),
+      fileName: JSON.stringify(resp.originalname),
+      filePath: JSON.stringify(resp.path),
+      fileType: JSON.stringify(resp.mimetype),
+      fileSize: fileSizeFormatter(JSON.stringify(resp.size, 2)) // 0.00
+    } 
+    response.render('edit-form', options)
+  })
+  .catch(err => {
+    response.send({
+      message: "Failed to read data to edit",
+      result: err
+    })
+  })
+}
+
+exports.updateData = async (request, response) => {
+  let datax = await request.body;
+  let filex = await request.file;
+
+  console.log(request);
+  console.log(datax);
+  console.log(filex);
+
+  let options = {
+    name: datax.product,
+    price: datax.price,
+    quantity: datax.quantity,
+    desc: datax.description,
+    owner: datax.owner,      
+    fileName: filex.originalname,
+    filePath: filex.path,
+    fileType: filex.mimetype,
+    fileSize: fileSizeFormatter(filex.size, 2) // 0.00
+  }
+
+  productModel.updateOne({_id: datax._id}, options)
+  .then(resp => {
+    response.send({
+      message: "Update Success",
+      result: resp
+    })
+  })
+  .catch(err => {
+    response.send({
+      message: "failed to update data",
+      result: err
+    })
+  })  
+}

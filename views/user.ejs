@@ -36,7 +36,7 @@
     <!-- navbar -->
 
     <!-- row alert -->
-    <div class="alert alert-success alert-dismissible show my-3" role="alert">
+    <div id="row-alert" class="alert alert-success alert-dismissible show my-3" role="alert">
       This is a sucalert-success alert—check it out!
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
@@ -55,9 +55,9 @@
           <div class="wrapper-button-navigation col-md-10 p-0 d-flex justify-content-end">
             <div class="input-group">
               <div class="input-group-prepend">
-                <span class="input-group-text" id="inputGroupPrepend">??</span>
+                <span class="input-group-text" id="inputGroupPrepend"><i class="fa fa-question-circle"></i></span>
               </div>
-              <input type="text" class="form-control search mr-2" id="search" name="search" placeholder="Find Here.." style="width:25%;">
+              <input type="text" class="form-control search mr-2" id="search" name="search" placeholder="Find Product Here.." style="width:25%;">
             </div>            
             <button type="button" name="btnSearch" id="btnSearch" class="btn btn-md btn-outline-success mr-2">
               <i class="fa fa-search"></i>
@@ -106,7 +106,30 @@
           </tbody>
         </table>      
     </div>
-    <!-- row table-product -->    
+    <!-- row table-product -->
+    <!-- row modal hidden --> 
+    <div class="wrapper-modal">
+      <!-- Modal -->
+      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Warning!!</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              You're about to delete the data. Are you sure you want to delete it?
+            </div>
+            <div class="modal-footer">
+
+            </div>
+          </div>
+        </div>
+      </div>      
+    </div>
+    <!-- row modal hidden -->
   </div>
 </body>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
@@ -179,8 +202,8 @@ document.querySelector('#btnRefresh').addEventListener('click', () => {
             ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
             <td scope="col" class="text-center">
               <button type="button" name="btnDetail" id="btnDetail" class="btn btn-sm btn-outline-primary"><i class="fa fa-images"></i></button>              
-              <a class="btn btn-sm btn-outline-success" name="btnEdit" id="btnEdit" href="/find/${ result.result[i].id }" role="button"><i class="fa fa-pencil"></i></a>
-              <button type="button" name="btnDelete" id="btnDelete" class="btn btn-sm btn-outline-danger"><i class="fa fa-dumpster"></i></button>
+              <a class="btn btn-sm btn-outline-success" name="btnEdit" id="btnEdit" href="/find-data/${ result.result[i].id }" role="button"><i class="fa fa-pencil"></i></a>
+              <button type="button" name="btnDelete" id="btnDelete" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#exampleModal" data-whatever="${ result.result[i].id }"><i class="fa fa-dumpster"></i></button>
             </td>
           </tr>   
       `;
@@ -215,9 +238,9 @@ document.querySelector('#btnSearch').addEventListener('click', (event) => {
               <td scope="col" class="text-center">${ result.result[i].owner }</td>
               ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
               <td scope="col" class="text-center">
-              <button type="button" name="btnDetail" id="btnDetail" class="btn btn-sm btn-outline-primary"><i class="fa fa-images"></i></button>                
+                <button type="button" name="btnDetail" id="btnDetail" class="btn btn-sm btn-outline-primary"><i class="fa fa-images"></i></button>                
                 <a class="btn btn-sm btn-outline-success" name="btnEdit" id="btnEdit" href="/find/${ result.result[i].id }" role="button"><i class="fa fa-pencil"></i></a>
-                <button type="button" name="btnDelete" id="btnDelete" class="btn btn-sm btn-outline-danger"><i class="fa fa-dumpster"></i></button>
+                <button type="button" name="btnDelete" id="btnDelete" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#exampleModal" data-whatever="${ result.result[i].id }"><i class="fa fa-dumpster"></i></button>
               </td>
             </tr>   
         `;
@@ -227,6 +250,61 @@ document.querySelector('#btnSearch').addEventListener('click', (event) => {
     })
   }
 })
+
+/* modal */
+$('#exampleModal').on('show.bs.modal', function (event) {
+  let button = $(event.relatedTarget) // Button that triggered the modal
+  let recipient = button.data('whatever') // Extract info from data-* attributes
+  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+  let modal = $(this)
+  modal.find('.modal-title').text('Warning! ID ' + recipient)
+  document.querySelector('.modal-footer').innerHTML = `
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+      <i class="fa fa-thumbs-down"></i>
+      Nah, I Change My Mind
+    </button>
+    <button type="button" id="${ recipient }" onclick="deleteUser(this.id)" class="btn btn-primary btn-delete">
+      <i class="fa fa-thumbs-up"></i>
+      Sure, Go Ahead
+    </button>
+  `;
+})
+
+/* remove products - dumpster button */
+function deleteUser(params) {
+  document.querySelector('#exampleModal').style.display = 'none';
+  document.querySelector("body").classList.remove("modal-open");
+
+  fetch('/delete-data/'+params, {
+    method: 'POST', 
+    headers: {
+      'Content-Type': 'application/json',
+      // 'Authorization': 'Bearer ' +JSON.parse(getCookies('user-data')).token
+    }
+  })
+  .then(function (response) {
+    return response.json();
+  })
+  .then(function (result) {
+    console.log(result)
+    document.querySelector('#row-alert').innerHTML = `
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>${ result.message }!</strong> Data Dengan ID ${ result.result } terhapus. <strong>Tunggu beberapa saat lagi, Tabel akan me-reload data baru</strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    `;
+
+    setTimeout(function () {
+      location.reload();
+    }, 3000)        
+  })
+  .catch(function(error) {
+    console.log(error)
+  })
+}
 
 </script>
 </html>

@@ -35,8 +35,18 @@ routes.post('/post-data', upload.single('customFile'), productController.postDat
 // populate data to table (for user)
 routes.get('/list-user-products', productController.listUserTable);
 
+// delete datum from the table
+routes.post('/delete-data/:param', productController.deleteData);
+
+// get datum to edit
+routes.get('/find-data/:param', productController.displayData);
+
+// update data
+routes.post('/update-data', upload.single('customFile'), productController.updateData);
+
 // populate search data to table
-routes.get('/search-data/:param', productController.searchDataTable)
+routes.get('/search-data/:param', productController.searchDataTable);
+
 
 // populate data to table (for guest)
 routes.get('/list-guest-products', productController.listGuestTable);
