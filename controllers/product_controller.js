@@ -189,10 +189,7 @@ exports.updateData = async (request, response) => {
 
   productModel.updateOne({_id: datax._id}, options)
   .then(resp => {
-    response.send({
-      message: "Update Success",
-      result: resp
-    })
+    response.render('user',  { message: "Update Success", result: resp })
   })
   .catch(err => {
     response.send({
