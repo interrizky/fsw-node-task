@@ -170,47 +170,48 @@ document.querySelector('#btnRefresh').addEventListener('click', () => {
 })
 
 /* fetch data to table */
-  async function getDataTables() {
-    const response = await fetch('/list-user-products', {
-      method: 'GET', 
-      headers: {
-        'Content-Type': 'application/json',
-        'Owner': JSON.parse(getCookies('user-data')).username,
-        // 'Authorization': 'Bearer '+JSON.parse(getCookies('user-data')).token
-      }
-    })
-    // error handling - throw ke catch error
-    if (!response.ok) {
-      const message = `An error has occured: ${response.status} & Text : ${response.statusText}`;
-      throw new Error(message);
+async function getDataTables() {
+  const response = await fetch('/list-user-products', {
+    method: 'GET', 
+    headers: {
+      'Content-Type': 'application/json',
+      'Owner': JSON.parse(getCookies('user-data')).username,
+      // 'Authorization': 'Bearer '+JSON.parse(getCookies('user-data')).token
     }
-    const result = await response.json();
-
-    return result;
-  }
-
-  getDataTables().then(result => {
-    document.querySelector('#table-body').innerHTML = '';
-    for( let i=0; i < result.result.length; i++ ) {
-      document.querySelector('#table-body').innerHTML += `
-        <tr>
-            <td scope="col" class="text-center">${ i+1 }</td>
-            <td scope="col" class="text-center"><i>${ result.result[i].name }</i></td>
-            <td scope="col" class="text-center">${ Number(result.result[i].price).toLocaleString('id-ID') }</td>
-            <td scope="col" class="text-center"><i>${ result.result[i].desc }</i></td>
-            <td scope="col" class="text-center">${ result.result[i].owner }</td>
-            ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
-            <td scope="col" class="text-center">
-              <button type="button" name="btnDetail" id="btnDetail" class="btn btn-sm btn-outline-primary"><i class="fa fa-images"></i></button>              
-              <a class="btn btn-sm btn-outline-success" name="btnEdit" id="btnEdit" href="/find-data/${ result.result[i].id }" role="button"><i class="fa fa-pencil"></i></a>
-              <button type="button" name="btnDelete" id="btnDelete" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#exampleModal" data-whatever="${ result.result[i].id }"><i class="fa fa-dumpster"></i></button>
-            </td>
-          </tr>   
-      `;
-    }
-  }).catch(error => {
-    console.log(error);
   })
+  // error handling - throw ke catch error
+  if (!response.ok) {
+    const message = `An error has occured: ${response.status} & Text : ${response.statusText}`;
+    throw new Error(message);
+  }
+  const result = await response.json();
+
+  return result;
+}
+
+getDataTables().then(result => {
+  document.querySelector('#table-body').innerHTML = '';
+  console.log(result);
+  for( let i=0; i < result.result.length; i++ ) {
+    document.querySelector('#table-body').innerHTML += `
+      <tr>
+          <td scope="col" class="text-center">${ i+1 }</td>
+          <td scope="col" class="text-center"><i>${ result.result[i].name }</i></td>
+          <td scope="col" class="text-center">${ Number(result.result[i].price).toLocaleString('id-ID') }</td>
+          <td scope="col" class="text-center"><i>${ result.result[i].desc }</i></td>
+          <td scope="col" class="text-center">${ result.result[i].owner }</td>
+          ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
+          <td scope="col" class="text-center">
+            <button type="button" name="btnDetail" id="btnDetail" class="btn btnDetail btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal" data-action="popup" data-path="${ result.result[i].filePath }" data-price="${ result.result[i].price }" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-images"></i></button>
+            <a class="btn btn-sm btn-outline-success" name="btnEdit" id="btnEdit" href="/find-data/${ result.result[i].id }" role="button"><i class="fa fa-pencil"></i></a>
+            <button type="button" name="btnDelete" id="btnDelete" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#exampleModal" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-dumpster"></i></button>
+          </td>
+        </tr>   
+    `;
+  }
+}).catch(error => {
+  console.log(error);
+})
 
 /* search and pop data into tables */
 document.querySelector('#btnSearch').addEventListener('click', (event) => {
@@ -238,9 +239,9 @@ document.querySelector('#btnSearch').addEventListener('click', (event) => {
               <td scope="col" class="text-center">${ result.result[i].owner }</td>
               ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
               <td scope="col" class="text-center">
-                <button type="button" name="btnDetail" id="btnDetail" class="btn btn-sm btn-outline-primary"><i class="fa fa-images"></i></button>                
+                <button type="button" name="btnDetail" id="btnDetail" class="btn btnDetail btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal" data-action="popup" data-path="${ result.result[i].filePath }" data-price="${ result.result[i].price }" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-images"></i></button>
                 <a class="btn btn-sm btn-outline-success" name="btnEdit" id="btnEdit" href="/find/${ result.result[i].id }" role="button"><i class="fa fa-pencil"></i></a>
-                <button type="button" name="btnDelete" id="btnDelete" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#exampleModal" data-whatever="${ result.result[i].id }"><i class="fa fa-dumpster"></i></button>
+                <button type="button" name="btnDelete" id="btnDelete" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#exampleModal" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-dumpster"></i></button>
               </td>
             </tr>   
         `;
@@ -254,21 +255,44 @@ document.querySelector('#btnSearch').addEventListener('click', (event) => {
 /* modal */
 $('#exampleModal').on('show.bs.modal', function (event) {
   let button = $(event.relatedTarget) // Button that triggered the modal
-  let recipient = button.data('whatever') // Extract info from data-* attributes
+  let _id = button.data('whatever') // Extract info from data-* attributes
+  
+  let name = button.data('name')
+  let price = button.data('price')
+  let path = button.data('path')
+  let action = button.data('action')  
   // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
   // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
   let modal = $(this)
-  modal.find('.modal-title').text('Warning! ID ' + recipient)
-  document.querySelector('.modal-footer').innerHTML = `
-    <button type="button" class="btn btn-secondary" data-dismiss="modal">
-      <i class="fa fa-thumbs-down"></i>
-      Nah, I Change My Mind
-    </button>
-    <button type="button" id="${ recipient }" onclick="deleteUser(this.id)" class="btn btn-primary btn-delete">
-      <i class="fa fa-thumbs-up"></i>
-      Sure, Go Ahead
-    </button>
-  `;
+  if( action === 'popup' ) {
+    /* title */
+    modal.find('.modal-title').text('Image for ' + name)  
+    /* body */
+    document.querySelector('.modal-body').innerHTML = `
+      <img src="../${ path }" alt="image retrieve" width="460" height="300">
+      <p class="text-center font-italic mt-1"> Harga : ${ price.toLocaleString('id-ID') } </p>
+    `;
+    /* footer */
+    document.querySelector('.modal-footer').innerHTML = `
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">
+        <i class="fa fa-times"></i>
+        Dismiss
+      </button>
+    `;    
+  } else {
+    modal.find('.modal-title').text('Warning! Delete ' + name)
+
+    document.querySelector('.modal-footer').innerHTML = `
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">
+        <i class="fa fa-thumbs-down"></i>
+        Nah, I Change My Mind
+      </button>
+      <button type="button" id="${ _id }" onclick="deleteUser(this.id)" class="btn btn-primary btn-delete">
+        <i class="fa fa-thumbs-up"></i>
+        Sure, Go Ahead
+      </button>
+    `;
+  }
 })
 
 /* remove products - dumpster button */
