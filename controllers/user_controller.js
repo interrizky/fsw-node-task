@@ -48,7 +48,7 @@ exports.loginUser = async(request, response) => {
 }
 
 exports.dashboardUser = (request, response) => {
-  response.render('user');
+  response.render('user', {message: ""});
 }
 
 exports.loginGuest = async(request, response) => {
@@ -86,5 +86,5 @@ exports.dashboardGuest = (request, response) => {
 }
 
 exports.addData = (request, response) => {
-  response.render('new-form')
+  response.render('new-form', {message: ""})
 }

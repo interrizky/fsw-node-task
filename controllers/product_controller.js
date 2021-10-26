@@ -22,10 +22,8 @@ exports.postData = async(request, response) => {
     // console.log(file);    
     const posting = await dataOptions.save();
     if( posting !== null || posting === undefined ) {
-      response.status(201).send({
-        message: 'File Uploaded Successfully',
-        result: dataOptions
-      });
+      // response.status(201).send({ message: 'File Uploaded Successfully', result: dataOptions});
+      response.status(201).render('new-form', {message: 'File Uploaded Successfully', result: dataOptions});
     }
   } catch {
     response.status(400).send(error.message);
@@ -157,7 +155,7 @@ exports.displayData = async (request, response) => {
       fileType: JSON.stringify(resp.mimetype),
       fileSize: fileSizeFormatter(JSON.stringify(resp.size, 2)) // 0.00
     } 
-    response.render('edit-form', options)
+    response.render('edit-form', {message: '', options: options})
   })
   .catch(err => {
     response.send({
@@ -167,34 +165,94 @@ exports.displayData = async (request, response) => {
   })
 }
 
-exports.updateData = async (request, response) => {
-  let datax = await request.body;
-  let filex = await request.file;
+exports.updateData = (req, res) => {
+  /* file upload helpers */
+  const storage = multer.diskStorage({
+      destination: (req, file, cb) => {
+          cb(null, 'uploads');
+      },
+      filename: (req, file, cb) => {
+          cb(null, new Date().toISOString().replace(/:/g, '-') + '-' + file.originalname);
+      }
+  });
 
-  console.log(request);
-  console.log(datax);
-  console.log(filex);
-
-  let options = {
-    name: datax.product,
-    price: datax.price,
-    quantity: datax.quantity,
-    desc: datax.description,
-    owner: datax.owner,      
-    fileName: filex.originalname,
-    filePath: filex.path,
-    fileType: filex.mimetype,
-    fileSize: fileSizeFormatter(filex.size, 2) // 0.00
+  const filefilter = (req, file, cb) => {
+      if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
+          cb(null, true);
+      } else {
+          cb(null, false);
+      }
   }
 
-  productModel.updateOne({_id: datax._id}, options)
-  .then(resp => {
-    response.render('user',  { message: "Update Success", result: resp })
-  })
-  .catch(err => {
-    response.send({
-      message: "failed to update data",
-      result: err
-    })
-  })  
+  const upload = multer({ storage: storage, fileFilter: filefilter }).any();
+  /* file upload helpers */
+
+  // console.log(request);
+  // upload.single('customFile');
+
+  upload(req, res, function(err) {
+      if (err) {
+          console.log(err);
+          return res.end('Error');
+      } else {
+        // isian aja ga pake update image
+        if( req.files[0] == undefined ) {
+          console.log('isian aja')
+          // console.log(req);
+          console.log(req.body);
+
+          let datax = req.body;
+          
+          let options = {
+            name: datax.product,
+            price: datax.price,
+            quantity: datax.quantity,
+            desc: datax.description,
+            owner: datax.owner,      
+          }
+
+          productModel.updateOne({_id: datax._id}, options)
+          .then(resp => {
+            res.render('edit-form',  { message: "Update Success", options: resp })
+          })
+          .catch(err => {
+            res.send({
+              message: "failed to update data",
+              result: err
+            })
+          })
+        } else {
+          console.log('isian & image')
+          // console.log(req);
+          console.log(req.body);
+          console.log(req.files[0]);
+
+          let datax = req.body;
+          let filex = req.files[0];
+
+          let options = {
+            name: datax.product,
+            price: datax.price,
+            quantity: datax.quantity,
+            desc: datax.description,
+            owner: datax.owner,      
+            fileName: filex.originalname,
+            filePath: filex.path,
+            fileType: filex.mimetype,
+            fileSize: fileSizeFormatter(filex.size, 2) // 0.00
+          }
+
+          productModel.updateOne({_id: datax._id}, options)
+          .then(resp => {
+            res.render('edit-form',  { message: "Update Success", options: resp })
+          })
+          .catch(err => {
+            res.send({
+              message: "failed to update data",
+              result: err
+            })
+          })
+        }
+      }
+  });  
 }

@@ -42,16 +42,14 @@ routes.post('/delete-data/:param', productController.deleteData);
 routes.get('/find-data/:param', productController.displayData);
 
 // update data
-routes.post('/update-data', upload.single('customFile'), productController.updateData);
+// routes.post('/update-data', upload.single('customFile'), productController.updateData);
+routes.post('/update-data', productController.updateData);
 
 // populate search data to table
 routes.get('/search-data/:param', productController.searchDataTable);
 
-
 // populate data to table (for guest)
 routes.get('/list-guest-products', productController.listGuestTable);
-
-// router.get('/getSingleFiles', getallSingleFiles);
 
 
 //Export to index.JS

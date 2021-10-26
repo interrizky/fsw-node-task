@@ -37,10 +37,7 @@
 
     <!-- row alert -->
     <div id="row-alert" class="alert alert-success alert-dismissible show my-3" role="alert">
-      This is a sucalert-success alert—check it out!
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>      
+
     </div>
     <!-- row alert -->
 
@@ -190,8 +187,17 @@ async function getDataTables() {
 }
 
 getDataTables().then(result => {
-  document.querySelector('#table-body').innerHTML = '';
   console.log(result);
+
+  document.querySelector('#row-alert').innerHTML = `
+    <b>${ result.message }</b>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>      
+  `;
+
+  document.querySelector('#table-body').innerHTML = '';
+
   for( let i=0; i < result.result.length; i++ ) {
     document.querySelector('#table-body').innerHTML += `
       <tr>
@@ -228,6 +234,14 @@ document.querySelector('#btnSearch').addEventListener('click', (event) => {
       return response.json()
     }).then(result => {
       console.log(result)
+
+      document.querySelector('#row-alert').innerHTML = `
+        <b>${ result.message }</b>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>      
+      `;
+
       document.querySelector('#table-body').innerHTML = '';
       for( let i=0; i < result.result.length; i++ ) {
         document.querySelector('#table-body').innerHTML += `
@@ -241,7 +255,7 @@ document.querySelector('#btnSearch').addEventListener('click', (event) => {
               <td scope="col" class="text-center">
                 <button type="button" name="btnDetail" id="btnDetail" class="btn btnDetail btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal" data-action="popup" data-path="${ result.result[i].filePath }" data-price="${ result.result[i].price }" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-images"></i></button>
                 <a class="btn btn-sm btn-outline-success" name="btnEdit" id="btnEdit" href="/find/${ result.result[i].id }" role="button"><i class="fa fa-pencil"></i></a>
-                <button type="button" name="btnDelete" id="btnDelete" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#exampleModal" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-dumpster"></i></button>
+                <button type="button" name="btnDelete" id="btnDelete" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-action="remove" data-target="#exampleModal" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-dumpster"></i></button>
               </td>
             </tr>   
         `;
@@ -312,14 +326,13 @@ function deleteUser(params) {
   })
   .then(function (result) {
     console.log(result)
+
     document.querySelector('#row-alert').innerHTML = `
-      <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <strong>${ result.message }!</strong> Data Dengan ID ${ result.result } terhapus. <strong>Tunggu beberapa saat lagi, Tabel akan me-reload data baru</strong>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-    `;
+      <strong>${ result.message }!</strong> Data Dengan ID ${ result.result } terhapus. <strong>Tunggu beberapa saat lagi, Tabel akan me-reload data baru</strong>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>      
+    `;    
 
     setTimeout(function () {
       location.reload();
