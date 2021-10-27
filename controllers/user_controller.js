@@ -16,7 +16,9 @@ exports.loginUser = async(request, response) => {
       result: "Hey, Invalid username or password"
     } )
   } else {
-    const userData = await userModel.findOne( {username: uname, password: pass} ).exec()
+    const userData = await userModel.findOne( {'username': uname, 'password': pass} ).exec()
+
+    console.log(userData)
 
     if( userData === null || userData === 'undefined' ) {
       response.status(404).send({

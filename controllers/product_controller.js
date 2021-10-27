@@ -80,10 +80,10 @@ exports.searchDataTable = (request, response) => {
 
   if( owner == 'guest' || owner == "guest" ) {
     productModel.find({ $or: [
-      {name: {$regex: '.*' + param.toString() + '.*'}}, 
-      {desc: {$regex: '.*' + param.toString() + '.*'}}, 
-      {price: {$regex: '.*' + param.toString() + '.*'}}, 
-      {owner: {$regex: '.*' + param.toString() + '.*'}}
+      {'name': {$regex: '.*' + param.toString() + '.*'}}, 
+      {'desc': {$regex: '.*' + param.toString() + '.*'}}, 
+      {'price': {$regex: '.*' + param.toString() + '.*'}}, 
+      {'owner': {$regex: '.*' + param.toString() + '.*'}}
     ]}).exec()
     .then(resp => {
       response.send({
@@ -97,11 +97,11 @@ exports.searchDataTable = (request, response) => {
       })
     })
   } else {
-    productModel.find({owner: owner.toString(), $or: [
-      {name: {$regex: '.*' + param.toString() + '.*'}}, 
-      {desc: {$regex: '.*' + param.toString() + '.*'}}, 
-      {price: {$regex: '.*' + param.toString() + '.*'}}, 
-      {owner: {$regex: '.*' + param.toString() + '.*'}}
+    productModel.find({'owner': owner.toString(), $or: [
+      {'name': {$regex: '.*' + param.toString() + '.*'}}, 
+      {'desc': {$regex: '.*' + param.toString() + '.*'}}, 
+      {'price': {$regex: '.*' + param.toString() + '.*'}}, 
+      {'owner': {$regex: '.*' + param.toString() + '.*'}}
     ]}).exec()
     .then(resp => {
       response.send({
@@ -118,30 +118,50 @@ exports.searchDataTable = (request, response) => {
 }
 
 exports.deleteData = (request, response) => {
-  let param = request.params.param;
-  // console.log(_id);
-  // console.log('Bearer ? '+newTokenAuth[0]);
-  // console.log('Token ? ' +newTokenAuth[1]);
+  let tokenAuth = request.headers.authorization;
 
-  productModel.deleteOne( { _id: param } )
-  .then(resp => {
-    response.send({
-      message: "Delete Success",
-      result: param
-    })
-  })
-  .catch(err => {
-    response.send({
-      message: "Failed to Delete Data",
-      result: err
-    })
-  })   
+  // Check Token
+  if( tokenAuth === undefined || tokenAuth === null || tokenAuth === '' ) {
+    response.status(403).send( {message: 'failed to get data', status: 403} );
+  } else {
+    // Split the token type
+    let newTokenAuth = tokenAuth.split(' ');
+    // Check Token if it is Bearer
+    if( newTokenAuth[0] != 'Bearer') {
+      response.status(403).send( {message: 'failed to get data', status: 403} );
+    } else {
+      // Checking Token
+      const token = jwt.verify(newTokenAuth[1], 'myPrivateKey', (error, result) => {
+        if (error) return false; if (result) return result
+      })
+      // Decide if token = true or false
+      if( !token ) {
+        response.status(401).send( {message: 'failed to get token', status: 401} );
+      } else {
+        let param = request.params.param;
+
+        productModel.deleteOne( { '_id': param } )
+        .then(resp => {
+          response.send({
+            message: "Delete Success",
+            result: param
+          })
+        })
+        .catch(err => {
+          response.send({
+            message: "Failed to Delete Data",
+            result: err
+          })
+        })   
+      }
+    }
+  }  
 }
 
 exports.displayData = async (request, response) => {
   let param = await request.params.param;
 
-  productModel.findOne({ _id: param })
+  productModel.findOne({ '_id': param })
   .then(resp => {
     let options = {
       _id:JSON.stringify(resp._id),
@@ -211,7 +231,7 @@ exports.updateData = (req, res) => {
             owner: datax.owner,      
           }
 
-          productModel.updateOne({_id: datax._id}, options)
+          productModel.updateOne({'_id': datax._id}, options)
           .then(resp => {
             res.render('edit-form',  { message: "Update Success", options: resp })
           })
@@ -242,7 +262,7 @@ exports.updateData = (req, res) => {
             fileSize: fileSizeFormatter(filex.size, 2) // 0.00
           }
 
-          productModel.updateOne({_id: datax._id}, options)
+          productModel.updateOne({'_id': datax._id}, options)
           .then(resp => {
             res.render('edit-form',  { message: "Update Success", options: resp })
           })

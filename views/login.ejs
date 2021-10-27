@@ -110,7 +110,7 @@ document.querySelector('#btnLogin').addEventListener('click', (events) => {
       /* first approach */
       let cookie = setCookie('user-data', JSON.stringify(result.result), 7);
       alert('Berhasil Login & Set Cookies');
-      location.href = 'http://localhost:9702/dashboard-user';
+      location.href = '/dashboard-user';
     } else {
       alert(result.message);
     }
