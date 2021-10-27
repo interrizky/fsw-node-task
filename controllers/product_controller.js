@@ -263,8 +263,9 @@ exports.updateData = (req, res) => {
 
             fs.readdir('uploads', (err, files) => {
               if (err) throw err;
-
+              // baca semua files dalam directory 'uploads'
               for (const file of files) {
+                // klo sama, di-delete
                 if( file ==  fileNameInDir[1] ) {
                   fs.unlink(path.join('uploads', file), err => {
                     if (err) throw err;
