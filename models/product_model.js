@@ -1,5 +1,7 @@
 /* Create Schema */
 const Mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
+
 
 var schemaOptions = {
   timestamps: true,
@@ -22,6 +24,9 @@ var productSchema = new Mongoose.Schema({
   fileType: { type: String, required: true },
   fileSize: { type: String, required: true },
 }, schemaOptions);
+
+// implement pagination-v2
+productSchema.plugin(mongoosePaginate);
 
 // products adalah nama schema / tabel di MangoDB-nya
 const products = Mongoose.model('products', productSchema);

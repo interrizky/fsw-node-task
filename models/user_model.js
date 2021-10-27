@@ -1,5 +1,6 @@
 /* Create Schema */
 const Mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 var schemaOptions = {
   timestamps: true,
@@ -18,6 +19,9 @@ var userSchema = new Mongoose.Schema({
   address: { type: String },
   age: { type: String }
 }, schemaOptions)
+
+// implement pagination-v2
+userSchema.plugin(mongoosePaginate);
 
 // user_registration adalah nama schema / tabel di MangoDB-nya
 const user = Mongoose.model('user_registration', userSchema);
