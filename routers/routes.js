@@ -51,6 +51,12 @@ routes.get('/search-data/:param', productController.searchDataTable);
 // populate data to table (for guest)
 routes.get('/list-guest-products', productController.listGuestTable);
 
+// halaman registrasi
+routes.get('/register', userController.viewRegister);
+routes.post('/post-registration', userController.postRegistration);
+
+
+
 
 //Export to index.JS
 module.exports = routes;

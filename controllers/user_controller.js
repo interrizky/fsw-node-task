@@ -90,3 +90,34 @@ exports.dashboardGuest = (request, response) => {
 exports.addData = (request, response) => {
   response.render('new-form', {message: ""})
 }
+
+exports.viewRegister = (request, response) => {
+  response.render('register')
+}
+
+exports.postRegistration = async (request, response) => {
+  let datax = await request.body;
+
+  const options = new userRegistrationModel({
+    username: datax.username,
+    password: datax.password,
+    email: datax.email,
+    address: datax.address,
+    age: datax.age
+  })
+
+  /* saving to database then sending to frontend - grab in callback result */
+  userModel.save(options)
+  .then(res => {
+    response.send({
+      message: "Success",
+      result: res
+    })
+  })
+  .catch(err => {
+    response.send({
+      message: "Failed",
+      result: err
+    })
+  })    
+}

@@ -231,7 +231,7 @@ exports.updateData = (req, res) => {
             owner: datax.owner,      
           }
 
-          productModel.updateOne({'_id': datax._id}, options)
+          productModel.updateOne({_id: datax._id}, options)
           .then(resp => {
             res.render('edit-form',  { message: "Update Success", options: resp })
           })
@@ -250,6 +250,34 @@ exports.updateData = (req, res) => {
           let datax = req.body;
           let filex = req.files[0];
 
+          // cari image di directory kemudian di-remove
+          productModel.findOne({ '_id': datax._id })
+          .then(response => {
+            // console.log(response);
+
+            let fileNameInDir = response.filePath.split('/');
+            fileNameInDir[0]; //uploads
+            fileNameInDir[1]; //nama file di dir
+            // console.log(fileNameInDir[0])
+            // console.log(fileNameInDir[1])
+
+            fs.readdir('uploads', (err, files) => {
+              if (err) throw err;
+
+              for (const file of files) {
+                if( file ==  fileNameInDir[1] ) {
+                  fs.unlink(path.join('uploads', file), err => {
+                    if (err) throw err;
+                  });
+                }
+              }
+            });            
+          })
+          .catch(error => {
+            console.log(error);
+          })
+
+          // upload image baru ke directory
           let options = {
             name: datax.product,
             price: datax.price,
