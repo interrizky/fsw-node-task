@@ -255,23 +255,29 @@ exports.updateData = (req, res) => {
           .then(response => {
             // console.log(response);
 
-            let fileNameInDir = response.filePath.split('/');
-            fileNameInDir[0]; //uploads
-            fileNameInDir[1]; //nama file di dir
-            // console.log(fileNameInDir[0])
-            // console.log(fileNameInDir[1])
+            // cara 1
+            // let fileNameInDir = response.filePath.split('/');
+            // fileNameInDir[0]; //uploads
+            // fileNameInDir[1]; //nama file di dir
+            // // console.log(fileNameInDir[0])
+            // // console.log(fileNameInDir[1])
 
-            fs.readdir('uploads', (err, files) => {
+            // fs.readdir('uploads', (err, files) => {
+            //   if (err) throw err;
+            //   // baca semua files dalam directory 'uploads'
+            //   for (const file of files) {
+            //     // klo sama, di-delete
+            //     if( file ==  fileNameInDir[1] ) {
+            //       fs.unlink(path.join('uploads', file), err => {
+            //         if (err) throw err;
+            //       });
+            //     }
+            //   }
+            // })
+            
+            //cara dua
+            fs.unlink(response.filePath, err => {
               if (err) throw err;
-              // baca semua files dalam directory 'uploads'
-              for (const file of files) {
-                // klo sama, di-delete
-                if( file ==  fileNameInDir[1] ) {
-                  fs.unlink(path.join('uploads', file), err => {
-                    if (err) throw err;
-                  });
-                }
-              }
             });            
           })
           .catch(error => {
