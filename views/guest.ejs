@@ -45,43 +45,98 @@
     <!-- row alert -->
 
     <!-- start navigation -->
-    <div class="wrapper-navigation my-3">
-      <form class="form-inline justify-content-end">
-        <div class="input-group">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="inputGroupPrepend"><i class="fa fa-question-circle"></i></span>
-          </div>
-          <input type="text" class="form-control search mr-2" id="search" name="search" placeholder="Search Product Here.." style="width:25%;">
-        </div>            
-        <button type="button" name="btnSearch" id="btnSearch" class="btn btn-md btn-outline-success mr-2">
-          <i class="fa fa-search"></i>
-        </button>              
-        <button type="button" name="btnReset" id="btnReset" class="btn btn-md btn-outline-secondary mr-2">
-          <i class="fa fa-broom"></i>
-        </button>               
-        <button type="button" name="btnRefresh" id="btnRefresh" class="btn btn-md btn-outline-info">
-          <i class="fa fa-sync"></i>
-        </button>
-      </form>
+    <div class="wrapper-navigation d-flex my-3">
+        <div class="navigation col-md-8 p-0">
+          <form class="form-inline">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroupPrepend"><i class="fa fa-question-circle"></i></span>
+              </div>
+              <input type="text" class="form-control search mr-2" id="search" name="search" placeholder="Search Product Here.." style="width:25%;">
+            </div>            
+            <button type="button" name="btnSearch" id="btnSearch" class="btn btn-md btn-outline-success mr-2">
+              <i class="fa fa-search"></i>
+            </button>              
+            <button type="button" name="btnReset" id="btnReset" class="btn btn-md btn-outline-secondary mr-2">
+              <i class="fa fa-broom"></i>
+            </button>               
+            <button type="button" name="btnRefresh" id="btnRefresh" class="btn btn-md btn-outline-info">
+              <i class="fa fa-sync"></i>
+            </button>
+          </form>
+        </div>
+        <div class="wrapper-pagination col-md-4 justify-content-end p-0">
+          <ul class="pagination pagination-list pagination-md m-0 p-0 justify-content-end">
+
+          <% if (pages > 0) { %>
+            <% if(state == 'search') { %>
+                <% if (Number(current) == 1) { %>
+                    <li class="page-item disabled"><a class="page-link">First</a></li>
+                <% } else { %>
+                    <li class="page-item"><a class="page-link" href="/dashboard-guest/outpost/<%= search %>/<%= Number(current) %>">First</a></li>
+                <% } %>
+                <% let i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
+                <% if (i !== 1) { %>
+                    <li class="page-item disabled"><a class="page-link">...</a></li>
+                <% } %>
+                <% for (; i <= (Number(current) + 4) && i <= pages; i++) { %>
+                    <% if (i == 0) { %>
+                        <li class="page-item active"><a class="page-link"><%= i %></a></li>
+                    <% } else { %>
+                        <li class="page-item"><a class="page-link" href="/dashboard-guest/outpost/<%= search %>/<%= i %>"><%= i %></a></li>
+                    <% } %>
+                    <% if (i == Number(current) + 4 && i < pages) { %>
+                        <li class="page-item disabled"><a>...</a></li>
+                    <% } %>
+                <% } %>
+                <% if (Number(current) == pages) { %>
+                    <li class="page-item disabled"><a class="page-link">Last</a></li>
+                <% } else { %>
+                    <li class="page-item">
+                      <a class="page-link" href="/dashboard-guest/outpost/<%= search %>/<%= pages %>">
+                        Last
+                      </a>
+                    </li>
+                <% } %>
+            <% } else { %>
+                <% if (Number(current) == 1) { %>
+                    <li class="page-item disabled"><a class="page-link">First</a></li>
+                <% } else { %>
+                    <li class="page-item"><a class="page-link" onclick="fetchTable(1);return false;">First</a></li>
+                <% } %>
+                <% let i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
+                <% if (i !== 1) { %>
+                    <li class="page-item disabled"><a class="page-link">...</a></li>
+                <% } %>
+                <% for (; i <= (Number(current) + 4) && i <= pages; i++) { %>
+                    <% if (i == 0) { %>
+                        <li class="page-item active"><a class="page-link"><%= i %></a></li>
+                    <% } else { %>
+                        <li class="page-item"><a class="page-link" onclick="fetchTable('<%= i %>');return false;"><%= i %></a></li>
+                    <% } %>
+                    <% if (i == Number(current) + 4 && i < pages) { %>
+                        <li class="page-item disabled"><a>...</a></li>
+                    <% } %>
+                <% } %>
+                <% if (Number(current) == pages) { %>
+                    <li class="page-item disabled"><a class="page-link">Last</a></li>
+                <% } else { %>
+                    <li class="page-item">
+                      <a class="page-link" onclick="fetchTable('<%= pages %>');return false;">
+                        Last
+                      </a>
+                    </li>
+                <% } %>
+            <% } %>
+          <% } %>                 
+          </ul>
+        </div>        
     </div>
     <!-- end navigation -->    
 
     <!-- row table-product -->
-    <div class="wrapper-table-product table-responsive my-3">
-        <table class="table table-bordered table-hover table-light">
-          <caption class="caption">
-            <div class="wrapper-caption d-flex">
-              <p class="text-muted col-md-2 m-0 p-0 ">List of All Products</p>
-              <ul class="pagination pagination-md col-md-10 m-0 p-0 justify-content-end">
-                <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">Next</a></li>
-              </ul>              
-            </div>
-          </caption>          
-
+    <div class="wrapper-table-product table-responsive my-3" style="height:550px;">
+        <table class="table table-bordered table-hover table-light header-fixed mb-0">
           <thead class="thead-light">
             <tr>
               <th scope="col" class="text-center" style="width: 5%;">#</th>
@@ -94,7 +149,23 @@
             </tr>            
           </thead>
           <tbody class="table-body">
-                                       
+            <% for(let i=0; i < result.length; i++) { %>
+            <tr>
+               <td scope="col" class="text-center"><%= i+1 %></td>
+               <td scope="col" class="text-center"><i><%= result[i].name %></i></td>
+               <td scope="col" class="text-center"><%= Number(result[i].price).toLocaleString('id-ID') %></td>
+               <td scope="col" class="text-center"><p class="text-justify text-wrap font-italic"><%= result[i].desc %></p></td>
+               <td scope="col" class="text-center"><%= result[i].owner %></td>
+               <% if(result[i].quantity > 0) { %>
+                <td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>
+               <% } else { %>
+                <td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>                
+               <% } %>
+               <td scope="col" class="text-center">
+                 <button type="button" name="btnDetail" id="btnDetail" class="btn btnDetail btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal" data-action="popup" data-path="<%= result[i].filePath %>" data-price="<%= result[i].price %>" data-name="<%= result[i].name %>" data-whatever="<%= result[i]._id %>"><i class="fa fa-images"></i></button>
+               </td>               
+            <% } %>
+            </tr>
           </tbody>
         </table>      
     </div>
@@ -129,6 +200,83 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
 <script src="https://pro.fontawesome.com/releases/v5.10.0/js/all.js" integrity="sha384-G/ZR3ntz68JZrH4pfPJyRbjW+c0+ojii5f+GYiYwldYU69A+Ejat6yIfLSxljXxD" crossorigin="anonymous"></script>
 <script type="text/javascript">
+/* pagination normal */
+async function fetchTable(params) {
+  alert('Button : '+params+' on clicked!')
+
+  const response = fetch('/fetchTablePage/'+params, {
+    method: 'POST',
+    headers: { 
+      'Content-Type': 'application/json', 
+      // 'Owner': JSON.parse(getCookies('user-data')).username,
+      // 'Authorization': 'Bearer '+JSON.parse(getCookies('user-data')).token  
+    }
+  }).then(response => {
+    return response.json();
+  }).then(result => {
+    /* table */
+    document.querySelector('.table-body').innerHTML = '';
+    for( let i=0; i < result.result.length; i++ ) {
+      document.querySelector('.table-body').innerHTML += `
+        <tr>
+            <td scope="col" class="text-center">${ i+(Number(result.offset)+1) }</td>
+            <td scope="col" class="text-center"><i>${ result.result[i].name }</i></td>
+            <td scope="col" class="text-center">${ Number(result.result[i].price).toLocaleString('id-ID') }</td>
+            <td scope="col" class="text-center"><p class="text-justify text-wrap font-italic">${ result.result[i].desc }</p></td>
+            <td scope="col" class="text-center">${ result.result[i].owner }</td>
+            ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
+            <td scope="col" class="text-center">
+              <button type="button" name="btnDetail" id="btnDetail" class="btn btnDetail btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal" data-action="popup" data-path="${ result.result[i].filePath }" data-price="${ result.result[i].price }" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-images"></i></button>
+            </td>
+        </tr>   
+      `;
+    }
+  }).catch(error => {
+    console.log(error);
+  })
+}
+
+/* fetch data to table from pagination */
+// async function fetchTable(params = 1) {
+//   const response = await fetch( `/list-guest-alternative/${ params }`, {
+//     method: 'POST', 
+//     headers: {
+//       'Content-Type': 'application/json',
+//       // 'Owner': JSON.parse(getCookies('user-data')).username,
+//       // 'Authorization': 'Bearer '+JSON.parse(getCookies('user-data')).token
+//     }
+//   })
+//   // error handling - throw ke catch error
+//   if (!response.ok) {
+//     const message = `An error has occured: ${response.status} & Text : ${response.statusText}`;
+//     throw new Error(message);
+//   }
+//   const result = await response.json();
+
+//   return result;
+// }
+
+// fetchTable().then(result => {
+// console.log(result)
+// for( let i=0; i < result.result.length; i++ ) {
+//   document.querySelector('.table-body').innerHTML += `
+//     <tr>
+//         <td scope="col" class="text-center">${ i+1 }</td>
+//         <td scope="col" class="text-center"><i>${ result.result[i].name }</i></td>
+//         <td scope="col" class="text-center">${ Number(result.result[i].price).toLocaleString('id-ID') }</td>
+//         <td scope="col" class="text-center"><p class="text-justify text-wrap font-italic">${ result.result[i].desc }</p></td>
+//         <td scope="col" class="text-center">${ result.result[i].owner }</td>
+//         ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
+//         <td scope="col" class="text-center">
+//           <button type="button" name="btnDetail" id="btnDetail" class="btn btnDetail btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal" data-action="popup" data-path="${ result.result[i].filePath }" data-price="${ result.result[i].price }" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-images"></i></button>
+//         </td>
+//     </tr>   
+//   `;
+// }
+// }).catch(error => {
+//   console.log(error);
+// })
+
 /* get Cookie */
 function getCookies(name) {
   var nameEQ = name + "=";
@@ -141,7 +289,7 @@ function getCookies(name) {
   return null;
 }
 
-/* button REGISTSER di navbar */
+/* button REGISTER di navbar */
 document.querySelector('.btnRegister').addEventListener('click', () => {
   location.href = '/homepage';
 })
@@ -154,81 +302,6 @@ document.querySelector('#btnReset').addEventListener('click', () => {
 /* button REFRESH di Navigation */
 document.querySelector('#btnRefresh').addEventListener('click', () => {
   location.href = '/dashboard-guest'
-})
-
-/* fetch data to table */
-async function getDataTables() {
-  const response = await fetch('/list-guest-products', {
-    method: 'GET', 
-    headers: {
-      'Content-Type': 'application/json',
-      // 'Owner': JSON.parse(getCookies('user-data')).username,
-      // 'Authorization': 'Bearer '+JSON.parse(getCookies('user-data')).token
-    }
-  })
-  // error handling - throw ke catch error
-  if (!response.ok) {
-    const message = `An error has occured: ${response.status} & Text : ${response.statusText}`;
-    throw new Error(message);
-  }
-  const result = await response.json();
-
-  return result;
-}
-
-getDataTables().then(result => {
-  for( let i=0; i < result.result.length; i++ ) {
-    document.querySelector('.table-body').innerHTML += `
-      <tr>
-          <td scope="col" class="text-center">${ i+1 }</td>
-          <td scope="col" class="text-center"><i>${ result.result[i].name }</i></td>
-          <td scope="col" class="text-center">${ Number(result.result[i].price).toLocaleString('id-ID') }</td>
-          <td scope="col" class="text-center"><i>${ result.result[i].desc }</i></td>
-          <td scope="col" class="text-center">${ result.result[i].owner }</td>
-          ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
-          <td scope="col" class="text-center">
-            <button type="button" name="btnDetail" id="btnDetail" class="btn btnDetail btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal" data-action="popup" data-path="${ result.result[i].filePath }" data-price="${ result.result[i].price }" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-images"></i></button>
-          </td>
-      </tr>   
-    `;
-  }
-}).catch(error => {
-  console.log(error);
-})
-
-/* search and pop data into tables */
-document.querySelector('#btnSearch').addEventListener('click', (event) => {
-  if( document.querySelector('#search').value == '' || document.querySelector('#search').value == null ) {
-    alert('Masukkan Keyword Pencarian');
-  } else {
-    fetch('/search-data/'+document.querySelector('#search').value, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Owner': JSON.parse(getCookies('user-data')).username,        
-      }      
-    }).then(response => {
-      return response.json()
-    }).then(result => {
-      console.log(result)
-      document.querySelector('.table-body').innerHTML = '';
-      for( let i=0; i < result.result.length; i++ ) {
-        document.querySelector('.table-body').innerHTML += `
-          <tr>
-              <td scope="col" class="text-center">${ i+1 }</td>
-              <td scope="col" class="text-center"><i>${ result.result[i].name }</i></td>
-              <td scope="col" class="text-center">${ Number(result.result[i].price).toLocaleString('id-ID') }</td>
-              <td scope="col" class="text-center"><i>${ result.result[i].desc }</i></td>
-              <td scope="col" class="text-center">${ result.result[i].owner }</td>
-              ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
-              <td scope="col" class="text-center"><button type="button" name="btnDetail" id="btnDetail" class="btn btn-sm btn-outline-primary"><i class="fa fa-images"></i></button></td>
-          </tr> 
-        `;
-      }
-    }).catch(error => {
-      console.log(error)
-    })
-  }
 })
 
 /* modal */
@@ -263,5 +336,183 @@ $('#exampleModal').on('show.bs.modal', function (event) {
   }
 })
 
+/* fetch data to table */
+// async function getDataTables() {
+//   const response = await fetch('/list-guest-products', {
+//     method: 'GET', 
+//     headers: {
+//       'Content-Type': 'application/json',
+//       // 'Owner': JSON.parse(getCookies('user-data')).username,
+//       // 'Authorization': 'Bearer '+JSON.parse(getCookies('user-data')).token
+//     }
+//   })
+//   // error handling - throw ke catch error
+//   if (!response.ok) {
+//     const message = `An error has occured: ${response.status} & Text : ${response.statusText}`;
+//     throw new Error(message);
+//   }
+//   const result = await response.json();
+
+//   return result;
+// }
+
+// getDataTables().then(result => {
+//   console.log(result)
+//   for( let i=0; i < result.result.length; i++ ) {
+//     document.querySelector('.table-body').innerHTML += `
+//       <tr>
+//           <td scope="col" class="text-center">${ i+1 }</td>
+//           <td scope="col" class="text-center"><i>${ result.result[i].name }</i></td>
+//           <td scope="col" class="text-center">${ Number(result.result[i].price).toLocaleString('id-ID') }</td>
+//           <td scope="col" class="text-center"><p class="text-justify text-wrap font-italic">${ result.result[i].desc }</p></td>
+//           <td scope="col" class="text-center">${ result.result[i].owner }</td>
+//           ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
+//           <td scope="col" class="text-center">
+//             <button type="button" name="btnDetail" id="btnDetail" class="btn btnDetail btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal" data-action="popup" data-path="${ result.result[i].filePath }" data-price="${ result.result[i].price }" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-images"></i></button>
+//           </td>
+//       </tr>   
+//     `;
+//   }
+// }).catch(error => {
+//   console.log(error);
+// })
+
+/* search and pop data into tables */
+// document.querySelector('#btnSearch').addEventListener('click', (event) => {
+//   if( document.querySelector('#search').value == '' || document.querySelector('#search').value == null ) {
+//     alert('Masukkan Keyword Pencarian');
+//   } else {
+//     fetch('/search-data/'+document.querySelector('#search').value, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//         'Owner': JSON.parse(getCookies('user-data')).username,        
+//       }      
+//     }).then(response => {
+//       return response.json()
+//     }).then(result => {
+//       console.log(result)
+//       /* table body */
+//       document.querySelector('.table-body').innerHTML = '';
+//       for( let i=0; i < result.result.length; i++ ) {
+//         document.querySelector('.table-body').innerHTML += `
+//           <tr>
+//             <td scope="col" class="text-center">${ i+1 }</td>
+//             <td scope="col" class="text-center"><i>${ result.result[i].name }</i></td>
+//             <td scope="col" class="text-center">${ Number(result.result[i].price).toLocaleString('id-ID') }</td>
+//             <td scope="col" class="text-center"><p class="text-justify text-wrap font-italic">${ result.result[i].desc }</p></td>
+//             <td scope="col" class="text-center">${ result.result[i].owner }</td>
+//             ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
+//             <td scope="col" class="text-center">
+//               <button type="button" name="btnDetail" id="btnDetail" class="btn btnDetail btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal" data-action="popup" data-path="${ result.result[i].filePath }" data-price="${ result.result[i].price }" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-images"></i></button>
+//             </td>
+//           </tr> 
+//         `;
+//       }
+//       /* pagination */
+//       let list = document.querySelector('.pagination-list');
+//       list.innerHTML = '';
+//       if(result.pages > 0) {
+//         (result.current == 1) ? list.innerHTML += `<li class="page-item disabled"><a class="page-link">First</a></li>` : list.innerHTML += `<li class="page-item"><a class="page-link" onclick="fetchTable();return false;">First</a></li>`
+//         let i = (Number(result.current) > 5 ? Number(result.current) - 4 : 1)
+//         if (i !== 1) { list.innerHTML += `<li class="page-item disabled"><a class="page-link">...</a></li>` }
+//         for (; i <= (Number(result.current) + 4) && i <= result.pages; i++) {
+//           (i == 0) ? list.innerHTML += `<li class="page-item active"><a class="page-link"></a></li>` : list.innerHTML += `<li class="page-item"><a class="page-link" onclick="fetchTable('');return false;"></a></li>`
+//           if (i == Number(result.current) + 4 && i < result.pages) { list.innerHTML += `<li class="page-item disabled"><a>...</a></li>` }
+//           (result.current == result.pages) ? list.innerHTML += `<li class="page-item disabled"><a class="page-link">Last</a></li>` : list.innerHTML += `<li class="page-item"><a class="page-link" onclick="fetchTable('${result.pages}');return false;">Last</a></li>`
+//         }
+//       }        
+//     }).catch(error => {
+//       console.log(error)
+//     })
+//   }
+// })
+
+/* input search then popup result and pagination */
+document.querySelector('#btnSearch').addEventListener('click', async (event) => {
+  let search = await document.querySelector('#search').value;
+
+  if( search == '' || search == null ) {
+    alert('Masukkan Keyword Pencarian');
+  } else {
+    let url = '/dashboard-guest/outpost/'+document.querySelector('#search').value+'/'+1;
+    const hasil = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // 'Owner': JSON.parse(getCookies('user-data')).username,        
+      }      
+    })
+    .then(response => {
+      return response.json();
+    })
+    .then(result => {
+      console.log(result)
+      // console.log(result.result)
+      
+      /* pagination-list */
+      let pagelist = document.querySelector('.pagination-list');
+      pagelist.innerHTML = ''
+      if(result.state == 'search') {
+        if( Number(result.current) == 1 ) {
+          pagelist.innerHTML += `<li class="page-item disabled"><a class="page-link">First</a></li>`;
+        } else {
+          pagelist.innerHTML += `<li class="page-item"><a class="page-link" href="/dashboard-guest/outpost/${result.search}/${Number(result.current)}">First</a></li>`;
+        }
+
+        let i = (Number(result.current) > 5 ? Number(result.current) - 4 : 1)
+        if( i !== 1 ) {
+          pagelist.innerHTML += `<li class="page-item disabled"><a class="page-link">...</a></li>`;
+        }
+
+        for( ; i <= (Number(result.current) + 4) && i <= result.pages; i++ ) {
+          if( i == 0 ) {
+            pagelist.innerHTML += `<li class="page-item active"><a class="page-link">${i}</a></li>`;
+          } else {
+            pagelist.innerHTML += `<li class="page-item"><a class="page-link" href="/dashboard-guest/outpost/${result.search}/${i}">${i}</a></li>`;
+          }
+
+          if( i == Number(result.current) + 4 && i < result.pages ) {
+            pagelist.innerHTML += `<li class="page-item disabled"><a>...</a></li>`;
+          }
+        }
+
+        if( Number(result.current) == result.pages ) {
+          pagelist.innerHTML += `<li class="page-item disabled"><a class="page-link">Last</a></li>`;
+        } else {
+          pagelist.innerHTML += `                
+            <li class="page-item">
+              <a class="page-link" href="/dashboard-guest/outpost/${result.search}/${result.pages}">
+                Last
+              </a>
+            </li>
+          `;
+        }
+      }
+      
+      /* table body */
+      document.querySelector('.table-body').innerHTML = '';
+      for( let i=0; i < result.result.length; i++ ) {
+        document.querySelector('.table-body').innerHTML += `
+          <tr>
+            <td scope="col" class="text-center">${ i+1 }</td>
+            <td scope="col" class="text-center"><i>${ result.result[i].name }</i></td>
+            <td scope="col" class="text-center">${ Number(result.result[i].price).toLocaleString('id-ID') }</td>
+            <td scope="col" class="text-center"><p class="text-justify text-wrap font-italic">${ result.result[i].desc }</p></td>
+            <td scope="col" class="text-center">${ result.result[i].owner }</td>
+            ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
+            <td scope="col" class="text-center">
+              <button type="button" name="btnDetail" id="btnDetail" class="btn btnDetail btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal" data-action="popup" data-path="${ result.result[i].filePath }" data-price="${ result.result[i].price }" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-images"></i></button>
+            </td>
+          </tr> 
+        `;
+      }      
+    })
+    .catch(error => {
+      console.log(error)
+      console.log(url)
+    })
+  }
+})
 </script>
 </html>

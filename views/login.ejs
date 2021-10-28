@@ -142,7 +142,7 @@ function loginGuest() {
       /* first approach */
       let cookie = setCookie('user-data', JSON.stringify(result.result), 7);
       alert('Berhasil Login & Set Cookies');
-      location.href = 'http://localhost:9702/dashboard-guest';
+      location.href = '/dashboard-guest';
     } else {
       alert(result.message);
     }

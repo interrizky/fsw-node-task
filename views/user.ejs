@@ -42,19 +42,21 @@
     <!-- row alert -->
 
     <!-- start navigation -->
-    <div class="wrapper-navigation my-3">
-        <form class="form-inline">
-          <div class="wrapper-button-add col-md-2 p-0 d-flex justify-content-start">
-            <button type="button" name="btnAdd" id="btnAdd" class="btn btn-md btn-outline-primary mr-2 justify-content-start">
+    <div class="wrapper-navigation d-flex my-3">
+        <div class="navigation-add col-md-4 p-0">
+          <form class="form-inline">
+            <button type="button" name="btnAdd" id="btnAdd" class="btn btn-md btn-outline-primary mr-4">
               <i class="fa fa-cart-plus"></i>
-            </button>
-          </div>
-          <div class="wrapper-button-navigation col-md-10 p-0 d-flex justify-content-end">
+            </button>                      
+          </form>
+        </div>
+        <div class="navigation-search col-md-4 p-0">
+          <form class="form-inline justify-content-center">
             <div class="input-group">
               <div class="input-group-prepend">
                 <span class="input-group-text" id="inputGroupPrepend"><i class="fa fa-question-circle"></i></span>
               </div>
-              <input type="text" class="form-control search mr-2" id="search" name="search" placeholder="Find Product Here.." style="width:25%;">
+              <input type="text" class="form-control search mr-2" id="search" name="search" placeholder="Search Product Here.." style="width:25%;">
             </div>            
             <button type="button" name="btnSearch" id="btnSearch" class="btn btn-md btn-outline-success mr-2">
               <i class="fa fa-search"></i>
@@ -64,29 +66,26 @@
             </button>               
             <button type="button" name="btnRefresh" id="btnRefresh" class="btn btn-md btn-outline-info">
               <i class="fa fa-sync"></i>
-            </button>
-          </div>    
+            </button>            
+          </form>
+        </div>
+        <div class="pagination col-md-4 justify-content-end p-0">
+          <ul class="pagination pagination-md m-0 p-0">
+            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+          </ul>    
+        </div>     
 
-        </form>
 
     </div>
     <!-- end navigation -->    
 
     <!-- row table-product -->
-    <div class="wrapper-table-product table-responsive my-3">
-        <table class="table table-bordered table-hover table-light">
-          <caption class="caption">
-            <div class="wrapper-caption d-flex">
-              <p class="text-muted col-md-2 m-0 p-0 ">List of All Products</p>
-              <ul class="pagination pagination-md col-md-10 m-0 p-0 justify-content-end">
-                <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">Next</a></li>
-              </ul>              
-            </div>
-          </caption>   
+    <div class="wrapper-table-product table-responsive my-3" style="overflow:auto; height:550px;">
+        <table class="table table-bordered table-hover table-light mb-0">
           <thead class="thead-light">
             <tr>
               <th scope="col" class="text-center" style="width: 5%;">#</th>
@@ -217,7 +216,7 @@ getDataTables().then(result => {
           <td scope="col" class="text-center">${ i+1 }</td>
           <td scope="col" class="text-center"><i>${ result.result[i].name }</i></td>
           <td scope="col" class="text-center">${ Number(result.result[i].price).toLocaleString('id-ID') }</td>
-          <td scope="col" class="text-center"><i>${ result.result[i].desc }</i></td>
+          <td scope="col" class="text-center"><p class="text-justify text-wrap font-italic">${ result.result[i].desc }</p></td>
           <td scope="col" class="text-center">${ result.result[i].owner }</td>
           ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
           <td scope="col" class="text-center">
@@ -267,7 +266,7 @@ document.querySelector('#btnSearch').addEventListener('click', (event) => {
                 <td scope="col" class="text-center">${ i+1 }</td>
                 <td scope="col" class="text-center"><i>${ result.result[i].name }</i></td>
                 <td scope="col" class="text-center">${ Number(result.result[i].price).toLocaleString('id-ID') }</td>
-                <td scope="col" class="text-center"><i>${ result.result[i].desc }</i></td>
+                <td scope="col" class="text-center"><p class="text-justify text-wrap font-italic">${ result.result[i].desc }</p></td>
                 <td scope="col" class="text-center">${ result.result[i].owner }</td>
                 ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
                 <td scope="col" class="text-center">

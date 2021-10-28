@@ -1,4 +1,6 @@
 const userModel = require('../models/user_model');
+const productModel = require('../models/product_model');
+
 const jwt = require('jsonwebtoken');
 
 exports.homepage = (request, response) => {
@@ -83,8 +85,48 @@ exports.loginGuest = async(request, response) => {
   }
 }
 
-exports.dashboardGuest = (request, response) => {
-  response.render('guest');
+exports.dashboardGuest = async(request, response) => {
+  // Here is way to calculate:
+
+  // limit = size
+  // offset = page * size
+  // Notice that we start counting from page 0.
+
+  // For example, if we want get page number 5 (page=5) and on each page there is 8 records (size=8), the calculations will look like this:
+
+  // limit = size = 8
+  // offset = page * size = 5 * 8 = 40
+
+  // original
+  // const result = await productModel.find().sort( {_id: -1} ).exec() 
+
+  let perPage = 4
+  let page = request.params.page || 1
+  let offset = 0;
+
+  await productModel.find({}).skip((perPage * page) - perPage).limit(perPage).exec(async function(err, products) {
+    // console.log(products)
+
+    await productModel.count().exec(function(err, count) {
+      if (err) return next(err)
+
+      // console.log("Page ke : "+page)
+      // console.log("Total Page : "+Math.ceil(count / perPage))
+
+      // console.log("Total Data : "+count)
+      // console.log("Page Saat Ini : "+page)
+      // console.log("Page Akhir : "+Math.ceil(count / perPage))
+      // console.log("Offset : "+offset)  
+
+      response.render('guest', {
+        state: '',
+        search:'',
+        result: products,
+        current: page,
+        pages: Math.ceil(count / perPage)
+      })
+    })
+  })
 }
 
 exports.addData = (request, response) => {

@@ -46,7 +46,10 @@ routes.get('/find-data/:param', productController.displayData);
 routes.post('/update-data', productController.updateData);
 
 // populate search data to table
-routes.get('/search-data/:param', productController.searchDataTable);
+// routes.get('/search-data/:param', productController.searchDataTable);
+
+// populate search data to table include pagination (guest)
+routes.post('/search-data/:param', productController.searchDataTable);
 
 // populate data to table (for guest)
 routes.get('/list-guest-products', productController.listGuestTable);
@@ -55,7 +58,14 @@ routes.get('/list-guest-products', productController.listGuestTable);
 routes.get('/register', userController.viewRegister);
 routes.post('/post-registration', userController.postRegistration);
 
+// fetch data from pagination
+// routes.post('/list-guest-alternative/:page', productController.fetchGuestTable);
+routes.post('/fetchTablePage/:page', productController.fetchGuestTable)
 
+
+/* trial */
+routes.post('/dashboard-guest/outpost/:search/:page/', productController.testFunction)
+routes.get('/dashboard-guest/outpost/:search/:page/', productController.testFunctionPage)
 
 
 //Export to index.JS

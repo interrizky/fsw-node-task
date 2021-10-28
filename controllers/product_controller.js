@@ -56,15 +56,31 @@ exports.listUserTable = (request, response) => {
   })
 }
 
-exports.listGuestTable = (request, response) => {
+exports.listGuestTable = async(request, response) => {
+  
   productModel.find().sort( {_id: -1} ).exec()
-    .then(resp => {
+
+  // const tradesCollection = await productModel.find().skip(offset).limit(limit)
+
+  // const tradesCollectionCount = await productModel.count()
+
+  // const totalPages = Math.ceil(tradesCollectionCount / limit)
+  // const currentPage = Math.ceil(tradesCollectionCount % offset)
+    // res.status(200).send({
+    //   data: tradesCollection,
+    //   paging: {
+    //     total: tradesCollectionCount,
+    //     page: currentPage,
+    //     pages: totalPages,
+    //   },  
+
+  .then(resp => {
     response.send({
       message: "Displaying Current Collections From MongoDB",
       result: resp
     })
-    })
-    .catch(err => {
+  })
+  .catch(err => {
     response.send({
       message: "Failed To Read Data",
       result: err
@@ -72,30 +88,54 @@ exports.listGuestTable = (request, response) => {
   })
 }
 
-exports.searchDataTable = (request, response) => {
+exports.searchDataTable = async (request, response) => {
   let owner = request.headers.owner
   let param = request.params.param
 
   console.log(owner, param)
 
-  if( owner == 'guest' || owner == "guest" ) {
-    productModel.find({ $or: [
-      {'name': {$regex: '.*' + param.toString() + '.*'}}, 
-      {'desc': {$regex: '.*' + param.toString() + '.*'}}, 
-      {'price': {$regex: '.*' + param.toString() + '.*'}}, 
-      {'owner': {$regex: '.*' + param.toString() + '.*'}}
-    ]}).exec()
-    .then(resp => {
-      response.send({
-        message: "Displaying Current Collections From MongoDB",
-        result: resp
+  let perPage = 4
+  let page = request.params.page || 1
+
+  // await productModel.find({}).skip((perPage * page) - perPage).limit(perPage).exec(async function(err, products) {
+  //   console.log(products)
+  //   await productModel.count().exec(function(err, count) {
+  //     if (err) return next(err)
+  //     response.render('guest', {
+  //       result: products,
+  //       current: page,
+  //       pages: Math.ceil(count / perPage)
+  //     })
+  //   })
+  // })
+
+  if( owner == 'guest' ) {
+    let options = [{'name': {$regex: '.*' + param.toString() + '.*'}}, {'desc': {$regex: '.*' + param.toString() + '.*'}}, {'price': {$regex: '.*' + param.toString() + '.*'}}, {'owner': {$regex: '.*' + param.toString() + '.*'}}];
+    // await productModel.find({ $or: options}).exec()
+    // .then(resp => {
+    //   response.send({
+    //     message: "Displaying Current Collections From MongoDB",
+    //     result: resp,
+    //   })
+    // })
+    // .catch(err => {
+    //   response.send({
+    //     message: "Failed To Read Data",
+    //     result: err
+    //   })
+    // })
+    await productModel.find({ $or: options }).skip((perPage * page) - perPage).limit(perPage).exec(async function(err, products) {
+      console.log(products)
+      await productModel.count().exec(function(err, count) {
+        if (err) return next(err)
+        response.send({
+          message: "Displaying Collections From Search",
+          result: products,
+          current: page,
+          pages: Math.ceil(count / perPage)
+        })
       })
-    }).catch(err => {
-      response.send({
-        message: "Failed To Read Data",
-        result: err
-      })
-    })
+    })      
   } else {
     productModel.find({'owner': owner.toString(), $or: [
       {'name': {$regex: '.*' + param.toString() + '.*'}}, 
@@ -310,4 +350,137 @@ exports.updateData = (req, res) => {
         }
       }
   });  
+}
+
+exports.fetchGuestTable = async (request, response) => {
+  let perPage = 4
+  let page = request.params.page || 1
+  let offset = (perPage * page) - perPage
+
+  await productModel.find({})
+    .skip((perPage * page) - perPage)
+    .limit(perPage)
+    .exec(function(err, products) {
+        productModel.count().exec(function(err, count) {
+            if (err) return next(err)
+
+            // console.log("Total Data : "+count)
+            // console.log("Page Saat Ini : "+page)
+            // console.log("Page Akhir : "+Math.ceil(count / perPage))
+            // console.log("Offset : "+offset)
+
+            response.send({
+              result: products,
+              current: page,
+              pages: Math.ceil(count / perPage),
+              offset: offset
+            })
+        })
+    })  
+}
+
+exports.testFunction = (request, response) => {
+  let perPage = 4
+  // let page = request.params.page || 1
+  let offset = 0;
+
+  let search = request.params.search;
+  let page = request.params.page || 1 // Page 
+
+  console.log(search)
+  console.log(page)
+
+  let options = [{'name': {$regex: '.*' + search.toString() + '.*'}}, {'desc': {$regex: '.*' + search.toString() + '.*'}}, {'price': {$regex: '.*' + search.toString() + '.*'}}, {'owner': {$regex: '.*' + search.toString() + '.*'}}];
+
+  productModel.find({ $or: options }).skip((perPage * page) - perPage).limit(perPage).exec( function(err, products) {
+    // console.log(products)
+
+    productModel.find({ $or: options }).count().exec(function(err, count) {
+      if (err) return next(err)
+
+      console.log("Total Data Hasil Search : "+count)
+      console.log("Page Saat Ini : "+page)
+      console.log("Page Akhir : "+Math.ceil(count / perPage))
+      let state = 'search';
+      // console.log("Offset : "+offset)  
+
+      // response.render('guest', {
+      //   state: JSON.stringify(state),
+      //   search: JSON.stringify(search),
+      //   result: JSON.stringify(products),
+      //   current: JSON.stringify(page),
+      //   pages: JSON.stringify(Math.ceil(count / perPage))
+      // })
+
+      // response.send({
+      //   state: JSON.stringify(state),
+      //   search: JSON.stringify(search),
+      //   result: JSON.stringify(products),
+      //   current: JSON.stringify(page),
+      //   pages: JSON.stringify(Math.ceil(count / perPage))
+      // })      
+
+      /* bisa balikin hasil */
+      response.send({
+        state: state,
+        search: search,
+        result: products,
+        current: page,
+        pages: Math.ceil(count / perPage)
+      })            
+    })
+  })  
+}
+
+exports.testFunctionPage = (request, response) => {
+  let perPage = 4
+  // let page = request.params.page || 1
+  let offset = 0;
+
+  let search = request.params.search;
+  let page = request.params.page || 1 // Page 
+
+  console.log(search)
+  console.log(page)
+
+  let options = [{'name': {$regex: '.*' + search.toString() + '.*'}}, {'desc': {$regex: '.*' + search.toString() + '.*'}}, {'price': {$regex: '.*' + search.toString() + '.*'}}, {'owner': {$regex: '.*' + search.toString() + '.*'}}];
+
+  productModel.find({ $or: options }).skip((perPage * page) - perPage).limit(perPage).exec( function(err, products) {
+    // console.log(products)
+
+    productModel.find({ $or: options }).count().exec(function(err, count) {
+      if (err) return next(err)
+
+      console.log("Total Data Hasil Search : "+count)
+      console.log("Page Saat Ini : "+page)
+      console.log("Page Akhir : "+Math.ceil(count / perPage))
+      let state = 'search';
+      // console.log("Offset : "+offset)  
+
+      response.render('guest', {
+        state: state,
+        search: search,
+        result: products,
+        current: page,
+        pages: Math.ceil(count / perPage)
+      })
+
+      // response.send({
+      //   state: JSON.stringify(state),
+      //   search: JSON.stringify(search),
+      //   result: JSON.stringify(products),
+      //   current: JSON.stringify(page),
+      //   pages: JSON.stringify(Math.ceil(count / perPage))
+      // })      
+
+      /* bisa balikin hasil */
+      // response.send({
+      //   state: state,
+      //   search: search,
+      //   result: products,
+      //   current: page,
+      //   pages: Math.ceil(count / perPage)
+      // })            
+    })
+  })  
 }

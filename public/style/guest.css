@@ -3,3 +3,7 @@ body {
   height: 100%!important;
   background-color: whitesmoke;
 }
+
+.header-fixed {
+    width: 100% 
+}
