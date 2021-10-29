@@ -137,7 +137,7 @@ fetchData().then(response => {
   return response.json();
 }).then(result => {
   for(let i = 0; i < result.result.length; i++) {
-    document.querySelector('.table-body').innerHTML = `
+    document.querySelector('.table-body').innerHTML += `
       <tr>
         <td class="text-center">${ i+1 }</td>
         <td class="text-center">${ result.result[i].title }</td>
