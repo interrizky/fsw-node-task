@@ -246,7 +246,8 @@ document.querySelector('#btnSearch').addEventListener('click', (event) => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Owner': JSON.parse(getCookies('user-data')).username,        
+          'Owner': JSON.parse(getCookies('user-data')).username,
+          'Authorization': 'Bearer '+JSON.parse(getCookies('user-data')).token             
         }      
       }).then(response => {
         return response.json()
@@ -329,7 +330,7 @@ $('#exampleModal').on('show.bs.modal', function (event) {
         <i class="fa fa-thumbs-down"></i>
         Nah, I Change My Mind
       </button>
-      <button type="button" id="${ _id }" onclick="deleteUser(this.id)" class="btn btn-primary btn-delete">
+      <button type="button" id="${ _id }" onclick="deleteData(this.id)" class="btn btn-primary btn-delete">
         <i class="fa fa-thumbs-up"></i>
         Sure, Go Ahead
       </button>
@@ -338,7 +339,7 @@ $('#exampleModal').on('show.bs.modal', function (event) {
 })
 
 /* remove products - dumpster button */
-function deleteUser(params) {
+function deleteData(params) {
   // kalo cookies di-delete
   if( getCookies('user-data') == null || getCookies('user-data') == undefined) {
     alert('Silahkan Login Terlebih Dahulu');

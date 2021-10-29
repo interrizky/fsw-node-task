@@ -50,6 +50,9 @@ routes.post('/post-data', upload.single('customFile'), productController.postDat
 // populate data to table (for user)
 routes.get('/list-user-products', productController.listUserTable);
 
+// search data to table
+routes.get('/search-data/:param', productController.searchDataTable);
+
 // delete datum from the table
 routes.post('/delete-data/:param', productController.deleteData);
 

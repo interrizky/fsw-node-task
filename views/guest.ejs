@@ -359,7 +359,8 @@ document.querySelector('#btnSearch').addEventListener('click', async (event) => 
       // method: "GET",
       headers: {
         'Content-Type': 'application/json',
-        // 'Owner': JSON.parse(getCookies('user-data')).username,        
+        // 'Owner': JSON.parse(getCookies('user-data')).username,
+        // 'Authorization': 'Bearer '+JSON.parse(getCookies('user-data')).token              
       },
       // body: JSON.stringify({
       //   search: document.querySelector('#search').value,

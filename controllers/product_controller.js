@@ -97,33 +97,9 @@ exports.searchDataTable = async (request, response) => {
   let perPage = 4
   let page = request.params.page || 1
 
-  // await productModel.find({}).skip((perPage * page) - perPage).limit(perPage).exec(async function(err, products) {
-  //   console.log(products)
-  //   await productModel.count().exec(function(err, count) {
-  //     if (err) return next(err)
-  //     response.render('guest', {
-  //       result: products,
-  //       current: page,
-  //       pages: Math.ceil(count / perPage)
-  //     })
-  //   })
-  // })
-
   if( owner == 'guest' ) {
     let options = [{'name': {$regex: '.*' + param.toString() + '.*'}}, {'desc': {$regex: '.*' + param.toString() + '.*'}}, {'price': {$regex: '.*' + param.toString() + '.*'}}, {'owner': {$regex: '.*' + param.toString() + '.*'}}];
-    // await productModel.find({ $or: options}).exec()
-    // .then(resp => {
-    //   response.send({
-    //     message: "Displaying Current Collections From MongoDB",
-    //     result: resp,
-    //   })
-    // })
-    // .catch(err => {
-    //   response.send({
-    //     message: "Failed To Read Data",
-    //     result: err
-    //   })
-    // })
+
     await productModel.find({ $or: options }).skip((perPage * page) - perPage).limit(perPage).exec(async function(err, products) {
       console.log(products)
       await productModel.count().exec(function(err, count) {
@@ -137,25 +113,49 @@ exports.searchDataTable = async (request, response) => {
       })
     })      
   } else {
-    productModel.find({'owner': owner.toString(), $or: [
-      {'name': {$regex: '.*' + param.toString() + '.*'}}, 
-      {'desc': {$regex: '.*' + param.toString() + '.*'}}, 
-      {'price': {$regex: '.*' + param.toString() + '.*'}}, 
-      {'owner': {$regex: '.*' + param.toString() + '.*'}}
-    ]}).exec()
-    .then(resp => {
-      response.send({
-        message: "Displaying Current Collections From MongoDB",
-        result: resp
-      })
-    }).catch(err => {
-      response.send({
-        message: "Failed To Read Data",
-        result: err
-      })
-    })    
+    let tokenAuth = request.headers.authorization;
+
+    // Check Token
+    if( tokenAuth === undefined || tokenAuth === null || tokenAuth === '' ) {
+      response.status(403).send( {message: 'failed to get data', status: 403} );
+    } else {
+      // Split the token type
+      let newTokenAuth = tokenAuth.split(' ');
+      // Check Token if it is Bearer
+      if( newTokenAuth[0] != 'Bearer') {
+        response.status(403).send( {message: 'failed to get data', status: 403} );
+      } else {
+        // Checking Token
+        const token = jwt.verify(newTokenAuth[1], 'myPrivateKey', (error, result) => {
+          if (error) return false; if (result) return result
+        })
+        // Decide if token = true or false
+        if( !token ) {
+          response.status(401).send( {message: 'failed to get token', status: 401} );
+        } else {
+          productModel.find({'owner': owner.toString(), $or: [
+            {'name': {$regex: '.*' + param.toString() + '.*'}}, 
+            {'desc': {$regex: '.*' + param.toString() + '.*'}}, 
+            {'price': {$regex: '.*' + param.toString() + '.*'}}, 
+            {'owner': {$regex: '.*' + param.toString() + '.*'}}
+          ]}).exec()
+          .then(resp => {
+            response.send({
+              message: "Displaying Current Collections From MongoDB",
+              result: resp
+            })
+          }).catch(err => {
+            response.send({
+              message: "Failed To Read Data",
+              result: err
+            })
+          })
+        }
+      }
+    }    
   }
 }
+
 
 exports.deleteData = (request, response) => {
   let tokenAuth = request.headers.authorization;
