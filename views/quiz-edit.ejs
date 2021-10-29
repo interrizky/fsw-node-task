@@ -13,30 +13,34 @@
     <div class="wrapper-form m-2 p-4">
       <h4 class="text-center font-weight-bold font-italic">Edit QUIZ</h4>
       <form action="/quiz-post-edit" method="post">
-        <div class="form-group">
-          <label for="title">Title</label>
-          <input type="text" class="form-control" id="title" name="title" placeholder="Title" value="<%= result.title %>">
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="title">Title</label>
+            <input type="text" class="form-control" id="title" name="title" placeholder="Title" value="<%= result.title %>">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="price">Price</label>
+            <input type="text" class="form-control" id="price" name="price" placeholder="Price" value="<%= result.price %>">
+          </div>        
+          <div class="form-group col-md-4">
+            <label for="id">ID</label>
+            <input type="text" class="form-control" id="id" name="id" placeholder="ID" value="<%= result.id %>">
+          </div>          
         </div>
-        <div class="form-group">
-          <label for="price">Price</label>
-          <input type="text" class="form-control" id="price" name="price" placeholder="Price" value="<%= result.price %>">
-        </div>        
-        <div class="form-group">
-          <label for="id">ID</label>
-          <input type="text" class="form-control" id="id" name="id" placeholder="ID" value="<%= result.id %>">
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="rate">Rate</label>
+            <input type="text" class="form-control" id="rate" name="rate" placeholder="Rate" value="<%= result.rate %>">
+          </div>                        
+          <div class="form-group col-md-6">
+            <label for="related">Related</label>
+            <input type="text" class="form-control" id="related" name="related" placeholder="Related" value="<%= result.related %>">
+          </div>                          
         </div>
         <div class="form-group d-none">
           <label for="_id">_ID</label>
           <input type="text" class="form-control" id="_id" name="_id" value="<%= result._id %>">
-        </div>        
-        <div class="form-group">
-          <label for="rate">Rate</label>
-          <input type="text" class="form-control" id="rate" name="rate" placeholder="Rate" value="<%= result.rate %>">
-        </div>                        
-        <div class="form-group">
-          <label for="related">Related</label>
-          <input type="text" class="form-control" id="related" name="related" placeholder="Related" value="<%= result.related %>">
-        </div>                
+        </div>
         <div class="form-group">
           <label for="excerpt">Excerpt</label>
           <textarea class="form-control" id="excerpt" name="excerpt" rows="3" placeholder="Excerpt"><%= result.excerpt %></textarea>
