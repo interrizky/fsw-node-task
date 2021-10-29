@@ -96,7 +96,6 @@ exports.dashboardGuest = async(request, response) => {
 
   // limit = size = 8
   // offset = page * size = 5 * 8 = 40
-  console.log(request)
 
   let perPage = 4
   // let search = request.params.search || null
@@ -109,10 +108,7 @@ exports.dashboardGuest = async(request, response) => {
   try {
     if( search == null || search == undefined ) {
       let state = 'dashboard'    
-      let source = 'dari awal dashboard'  
-
-      console.log(state)
-      console.log(source)
+      let source = 'dari awal dashboard'
 
       await productModel.find({}).skip((perPage * page) - perPage).limit(perPage).exec(async function(err, products) {
 

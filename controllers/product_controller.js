@@ -56,9 +56,11 @@ exports.listUserTable = (request, response) => {
   })
 }
 
-exports.listGuestTable = async(request, response) => {
+exports.listGuestTable = (request, response) => {
   
   productModel.find().sort( {_id: -1} ).exec()
+
+  console.log("LGT : "+request)
 
   // const tradesCollection = await productModel.find().skip(offset).limit(limit)
 
@@ -141,7 +143,7 @@ exports.searchDataTable = async (request, response) => {
           ]}).exec()
           .then(resp => {
             response.send({
-              message: "Displaying Current Collections From MongoDB",
+              message: "Displaying Search Collections Results",
               result: resp
             })
           }).catch(err => {
@@ -476,3 +478,12 @@ exports.testFunctionPage = (request, response) => {
     })
   })  
 }
+
+exports.datatables = async (req, res) => {
+  const queries = await productModel.find({})
+  // console.log(req)
+  console.log(queries)
+  res.send(queries)
+  // res.send(JSON.stringify(queries));
+}
+
