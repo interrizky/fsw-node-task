@@ -210,8 +210,3 @@ exports.postRegistration = async (request, response) => {
     })
   })    
 }
-
-exports.logout = (request, response) => {
-  response.clearCookie('user-data');
-  return response.sendStatus(200).render('login');  
-}
