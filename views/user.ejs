@@ -147,6 +147,7 @@ function getCookies(name) {
 
 /* btnLogout - back to Login Page */
 document.querySelector("#btnLogout").addEventListener('click', (event) => {
+  setCookie('user-data', null, Date.now());  
   location.href = '/homepage';
 })
 

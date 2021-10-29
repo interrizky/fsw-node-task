@@ -67,38 +67,10 @@
         </div>
         <div class="wrapper-pagination col-md-4 justify-content-end p-0">
           <ul class="pagination pagination-list pagination-md m-0 p-0 justify-content-end">
-
+          
+            <!-- if else : 1 (dari dashboard), 2 (dari search) -->
           <% if (pages > 0) { %>
-            <% if(state == 'search') { %>
-                <% if (Number(current) == 1) { %>
-                    <li class="page-item disabled"><a class="page-link">First</a></li>
-                <% } else { %>
-                    <li class="page-item"><a class="page-link" href="/dashboard-guest/outpost/<%= search %>/<%= Number(current) %>">First</a></li>
-                <% } %>
-                <% let i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
-                <% if (i !== 1) { %>
-                    <li class="page-item disabled"><a class="page-link">...</a></li>
-                <% } %>
-                <% for (; i <= (Number(current) + 4) && i <= pages; i++) { %>
-                    <% if (i == 0) { %>
-                        <li class="page-item active"><a class="page-link"><%= i %></a></li>
-                    <% } else { %>
-                        <li class="page-item"><a class="page-link" href="/dashboard-guest/outpost/<%= search %>/<%= i %>"><%= i %></a></li>
-                    <% } %>
-                    <% if (i == Number(current) + 4 && i < pages) { %>
-                        <li class="page-item disabled"><a>...</a></li>
-                    <% } %>
-                <% } %>
-                <% if (Number(current) == pages) { %>
-                    <li class="page-item disabled"><a class="page-link">Last</a></li>
-                <% } else { %>
-                    <li class="page-item">
-                      <a class="page-link" href="/dashboard-guest/outpost/<%= search %>/<%= pages %>">
-                        Last
-                      </a>
-                    </li>
-                <% } %>
-            <% } else { %>
+            <% if(state == 'dashboard') { %>
                 <% if (Number(current) == 1) { %>
                     <li class="page-item disabled"><a class="page-link">First</a></li>
                 <% } else { %>
@@ -122,7 +94,34 @@
                     <li class="page-item disabled"><a class="page-link">Last</a></li>
                 <% } else { %>
                     <li class="page-item">
-                      <a class="page-link" onclick="fetchTable('<%= pages %>');return false;">
+                      <a class="page-link" onclick="fetchTable('<%= pages %>');return false;">Last</a>
+                    </li>
+                <% } %>
+            <% } else { %>
+                <% if (Number(current) == 1) { %>
+                    <li class="page-item disabled"><a class="page-link">First</a></li>
+                <% } else { %>
+                    <li class="page-item"><a class="page-link" href="/dashboard-guest/<%= search %>/1">First</a></li>
+                <% } %>
+                <% let i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
+                <% if (i !== 1) { %>
+                    <li class="page-item disabled"><a class="page-link">...</a></li>
+                <% } %>
+                <% for (; i <= (Number(current) + 4) && i <= pages; i++) { %>
+                    <% if (i == 0) { %>
+                        <li class="page-item active"><a class="page-link"><%= i %></a></li>
+                    <% } else { %>
+                        <li class="page-item"><a class="page-link" href="/dashboard-guest/<%= search %>/<%= i %>"><%= i %></a></li>
+                    <% } %>
+                    <% if (i == Number(current) + 4 && i < pages) { %>
+                        <li class="page-item disabled"><a>...</a></li>
+                    <% } %>
+                <% } %>
+                <% if (Number(current) == pages) { %>
+                    <li class="page-item disabled"><a class="page-link">Last</a></li>
+                <% } else { %>
+                    <li class="page-item">
+                      <a class="page-link" href="/dashboard-guest/<%= search %>/<%= pages %>">
                         Last
                       </a>
                     </li>
@@ -202,8 +201,6 @@
 <script type="text/javascript">
 /* pagination normal */
 async function fetchTable(params) {
-  alert('Button : '+params+' on clicked!')
-
   const response = fetch('/fetchTablePage/'+params, {
     method: 'POST',
     headers: { 
@@ -277,6 +274,16 @@ async function fetchTable(params) {
 //   console.log(error);
 // })
 
+function setCookie(name,value,days) {
+  var expires = "";
+  if (days) {
+    var date = new Date();
+    date.setTime(date.getTime() + (days*24*60*60*1000));
+    expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+}
+
 /* get Cookie */
 function getCookies(name) {
   var nameEQ = name + "=";
@@ -291,6 +298,7 @@ function getCookies(name) {
 
 /* button REGISTER di navbar */
 document.querySelector('.btnRegister').addEventListener('click', () => {
+  setCookie('user-data', null, Date.now());  
   location.href = '/homepage';
 })
 
@@ -336,98 +344,6 @@ $('#exampleModal').on('show.bs.modal', function (event) {
   }
 })
 
-/* fetch data to table */
-// async function getDataTables() {
-//   const response = await fetch('/list-guest-products', {
-//     method: 'GET', 
-//     headers: {
-//       'Content-Type': 'application/json',
-//       // 'Owner': JSON.parse(getCookies('user-data')).username,
-//       // 'Authorization': 'Bearer '+JSON.parse(getCookies('user-data')).token
-//     }
-//   })
-//   // error handling - throw ke catch error
-//   if (!response.ok) {
-//     const message = `An error has occured: ${response.status} & Text : ${response.statusText}`;
-//     throw new Error(message);
-//   }
-//   const result = await response.json();
-
-//   return result;
-// }
-
-// getDataTables().then(result => {
-//   console.log(result)
-//   for( let i=0; i < result.result.length; i++ ) {
-//     document.querySelector('.table-body').innerHTML += `
-//       <tr>
-//           <td scope="col" class="text-center">${ i+1 }</td>
-//           <td scope="col" class="text-center"><i>${ result.result[i].name }</i></td>
-//           <td scope="col" class="text-center">${ Number(result.result[i].price).toLocaleString('id-ID') }</td>
-//           <td scope="col" class="text-center"><p class="text-justify text-wrap font-italic">${ result.result[i].desc }</p></td>
-//           <td scope="col" class="text-center">${ result.result[i].owner }</td>
-//           ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
-//           <td scope="col" class="text-center">
-//             <button type="button" name="btnDetail" id="btnDetail" class="btn btnDetail btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal" data-action="popup" data-path="${ result.result[i].filePath }" data-price="${ result.result[i].price }" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-images"></i></button>
-//           </td>
-//       </tr>   
-//     `;
-//   }
-// }).catch(error => {
-//   console.log(error);
-// })
-
-/* search and pop data into tables */
-// document.querySelector('#btnSearch').addEventListener('click', (event) => {
-//   if( document.querySelector('#search').value == '' || document.querySelector('#search').value == null ) {
-//     alert('Masukkan Keyword Pencarian');
-//   } else {
-//     fetch('/search-data/'+document.querySelector('#search').value, {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//         'Owner': JSON.parse(getCookies('user-data')).username,        
-//       }      
-//     }).then(response => {
-//       return response.json()
-//     }).then(result => {
-//       console.log(result)
-//       /* table body */
-//       document.querySelector('.table-body').innerHTML = '';
-//       for( let i=0; i < result.result.length; i++ ) {
-//         document.querySelector('.table-body').innerHTML += `
-//           <tr>
-//             <td scope="col" class="text-center">${ i+1 }</td>
-//             <td scope="col" class="text-center"><i>${ result.result[i].name }</i></td>
-//             <td scope="col" class="text-center">${ Number(result.result[i].price).toLocaleString('id-ID') }</td>
-//             <td scope="col" class="text-center"><p class="text-justify text-wrap font-italic">${ result.result[i].desc }</p></td>
-//             <td scope="col" class="text-center">${ result.result[i].owner }</td>
-//             ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
-//             <td scope="col" class="text-center">
-//               <button type="button" name="btnDetail" id="btnDetail" class="btn btnDetail btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal" data-action="popup" data-path="${ result.result[i].filePath }" data-price="${ result.result[i].price }" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-images"></i></button>
-//             </td>
-//           </tr> 
-//         `;
-//       }
-//       /* pagination */
-//       let list = document.querySelector('.pagination-list');
-//       list.innerHTML = '';
-//       if(result.pages > 0) {
-//         (result.current == 1) ? list.innerHTML += `<li class="page-item disabled"><a class="page-link">First</a></li>` : list.innerHTML += `<li class="page-item"><a class="page-link" onclick="fetchTable();return false;">First</a></li>`
-//         let i = (Number(result.current) > 5 ? Number(result.current) - 4 : 1)
-//         if (i !== 1) { list.innerHTML += `<li class="page-item disabled"><a class="page-link">...</a></li>` }
-//         for (; i <= (Number(result.current) + 4) && i <= result.pages; i++) {
-//           (i == 0) ? list.innerHTML += `<li class="page-item active"><a class="page-link"></a></li>` : list.innerHTML += `<li class="page-item"><a class="page-link" onclick="fetchTable('');return false;"></a></li>`
-//           if (i == Number(result.current) + 4 && i < result.pages) { list.innerHTML += `<li class="page-item disabled"><a>...</a></li>` }
-//           (result.current == result.pages) ? list.innerHTML += `<li class="page-item disabled"><a class="page-link">Last</a></li>` : list.innerHTML += `<li class="page-item"><a class="page-link" onclick="fetchTable('${result.pages}');return false;">Last</a></li>`
-//         }
-//       }        
-//     }).catch(error => {
-//       console.log(error)
-//     })
-//   }
-// })
-
 /* input search then popup result and pagination */
 document.querySelector('#btnSearch').addEventListener('click', async (event) => {
   let search = await document.querySelector('#search').value;
@@ -436,28 +352,38 @@ document.querySelector('#btnSearch').addEventListener('click', async (event) => 
     alert('Masukkan Keyword Pencarian');
   } else {
     let url = '/dashboard-guest/outpost/'+document.querySelector('#search').value+'/'+1;
+    // let url = '/dashboard-guest/'+document.querySelector('#search').value+'/'+1
+    // let url = '/dashboard-guest/'
     const hasil = await fetch(url, {
       method: 'POST',
+      // method: "GET",
       headers: {
         'Content-Type': 'application/json',
         // 'Owner': JSON.parse(getCookies('user-data')).username,        
-      }      
+      },
+      // body: JSON.stringify({
+      //   search: document.querySelector('#search').value,
+      //   page: 1
+      // })
     })
     .then(response => {
       return response.json();
     })
     .then(result => {
       console.log(result)
-      // console.log(result.result)
-      
+      console.log(result.result)
+      console.log(result.offset)
+
       /* pagination-list */
       let pagelist = document.querySelector('.pagination-list');
       pagelist.innerHTML = ''
+
       if(result.state == 'search') {
+        /* pagination */
         if( Number(result.current) == 1 ) {
           pagelist.innerHTML += `<li class="page-item disabled"><a class="page-link">First</a></li>`;
         } else {
-          pagelist.innerHTML += `<li class="page-item"><a class="page-link" href="/dashboard-guest/outpost/${result.search}/${Number(result.current)}">First</a></li>`;
+          pagelist.innerHTML += `<li class="page-item"><a class="page-link" href="/dashboard-guest/${result.search}/1">First</a></li>`;
         }
 
         let i = (Number(result.current) > 5 ? Number(result.current) - 4 : 1)
@@ -469,7 +395,7 @@ document.querySelector('#btnSearch').addEventListener('click', async (event) => 
           if( i == 0 ) {
             pagelist.innerHTML += `<li class="page-item active"><a class="page-link">${i}</a></li>`;
           } else {
-            pagelist.innerHTML += `<li class="page-item"><a class="page-link" href="/dashboard-guest/outpost/${result.search}/${i}">${i}</a></li>`;
+            pagelist.innerHTML += `<li class="page-item"><a class="page-link" href="/dashboard-guest/${result.search}/${i}">${i}</a></li>`;
           }
 
           if( i == Number(result.current) + 4 && i < result.pages ) {
@@ -482,35 +408,34 @@ document.querySelector('#btnSearch').addEventListener('click', async (event) => 
         } else {
           pagelist.innerHTML += `                
             <li class="page-item">
-              <a class="page-link" href="/dashboard-guest/outpost/${result.search}/${result.pages}">
+              <a class="page-link" href="/dashboard-guest/${result.search}/${result.pages}">
                 Last
               </a>
             </li>
           `;
         }
-      }
-      
-      /* table body */
-      document.querySelector('.table-body').innerHTML = '';
-      for( let i=0; i < result.result.length; i++ ) {
-        document.querySelector('.table-body').innerHTML += `
-          <tr>
-            <td scope="col" class="text-center">${ i+1 }</td>
-            <td scope="col" class="text-center"><i>${ result.result[i].name }</i></td>
-            <td scope="col" class="text-center">${ Number(result.result[i].price).toLocaleString('id-ID') }</td>
-            <td scope="col" class="text-center"><p class="text-justify text-wrap font-italic">${ result.result[i].desc }</p></td>
-            <td scope="col" class="text-center">${ result.result[i].owner }</td>
-            ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
-            <td scope="col" class="text-center">
-              <button type="button" name="btnDetail" id="btnDetail" class="btn btnDetail btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal" data-action="popup" data-path="${ result.result[i].filePath }" data-price="${ result.result[i].price }" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-images"></i></button>
-            </td>
-          </tr> 
-        `;
-      }      
+
+        /* table body */
+        document.querySelector('.table-body').innerHTML = '';
+        for( let i=0; i < result.result.length; i++ ) {
+          document.querySelector('.table-body').innerHTML += `
+            <tr>
+              <td scope="col" class="text-center">${ i+(Number(result.offset)+1) }</td>
+              <td scope="col" class="text-center"><i>${ result.result[i].name }</i></td>
+              <td scope="col" class="text-center">${ Number(result.result[i].price).toLocaleString('id-ID') }</td>
+              <td scope="col" class="text-center"><p class="text-justify text-wrap font-italic">${ result.result[i].desc }</p></td>
+              <td scope="col" class="text-center">${ result.result[i].owner }</td>
+              ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
+              <td scope="col" class="text-center">
+                <button type="button" name="btnDetail" id="btnDetail" class="btn btnDetail btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal" data-action="popup" data-path="${ result.result[i].filePath }" data-price="${ result.result[i].price }" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-images"></i></button>
+              </td>
+            </tr> 
+          `;
+        }             
+      } 
     })
     .catch(error => {
       console.log(error)
-      console.log(url)
     })
   }
 })

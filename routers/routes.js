@@ -25,9 +25,6 @@ routes.get('/add-data', userController.addData);
 // login as guest
 routes.post('/login-guest', userController.loginGuest);
 
-// halaman login as guest
-routes.get('/dashboard-guest', userController.dashboardGuest);
-
 // function post-save data product to desired destination "./uploads" and database
 // customFile adalah selector field untuk upload
 routes.post('/post-data', upload.single('customFile'), productController.postData);
@@ -58,15 +55,30 @@ routes.get('/list-guest-products', productController.listGuestTable);
 routes.get('/register', userController.viewRegister);
 routes.post('/post-registration', userController.postRegistration);
 
-// fetch data from pagination
-// routes.post('/list-guest-alternative/:page', productController.fetchGuestTable);
+/* ================================================================= */
+/*                               GUEST                               */
+/* ================================================================= */
+
+// halaman pertama as guest
+// query -> table (load semua data namun dibatasi perPage) - 
+// pagination (dari query load manual ke ejs, lalu kasi onclick func di tiap button)
+// onsite url (tidak berubah)
+routes.get('/dashboard-guest', userController.dashboardGuest);
+// fetch data ke tabel dari onclick pagination yang disetup dari query awal
 routes.post('/fetchTablePage/:page', productController.fetchGuestTable)
 
+// trial
+// routes.post('/dashboard-guest/:search/:page/', userController.dashboardGuest)
+// routes.get('/dashboard-guest/:search/:page/', productController.testFunctionPage)
 
-/* trial */
+/* sukses */
+// load searching = table & pagination
 routes.post('/dashboard-guest/outpost/:search/:page/', productController.testFunction)
-routes.get('/dashboard-guest/outpost/:search/:page/', productController.testFunctionPage)
+// pagination client side func
+routes.get('/dashboard-guest/:search/:page/', productController.testFunctionPage)
+// routes.post('/dashboard-guest/:search/:page/', productController.testFunctionPage)
 
+routes.post('/logout', userController.logout);
 
 //Export to index.JS
 module.exports = routes;

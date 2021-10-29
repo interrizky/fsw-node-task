@@ -96,37 +96,84 @@ exports.dashboardGuest = async(request, response) => {
 
   // limit = size = 8
   // offset = page * size = 5 * 8 = 40
-
-  // original
-  // const result = await productModel.find().sort( {_id: -1} ).exec() 
+  console.log(request)
 
   let perPage = 4
-  let page = request.params.page || 1
-  let offset = 0;
+  // let search = request.params.search || null
+  // let page = request.params.page || 1
+  let search = request.body.search || null
+  let page = request.body.page || 1  
+  // let offset = 0;
+  let offset = (perPage * page) - perPage  
 
-  await productModel.find({}).skip((perPage * page) - perPage).limit(perPage).exec(async function(err, products) {
-    // console.log(products)
+  try {
+    if( search == null || search == undefined ) {
+      let state = 'dashboard'    
+      let source = 'dari awal dashboard'  
 
-    await productModel.count().exec(function(err, count) {
-      if (err) return next(err)
+      console.log(state)
+      console.log(source)
 
-      // console.log("Page ke : "+page)
-      // console.log("Total Page : "+Math.ceil(count / perPage))
+      await productModel.find({}).skip((perPage * page) - perPage).limit(perPage).exec(async function(err, products) {
 
-      // console.log("Total Data : "+count)
-      // console.log("Page Saat Ini : "+page)
-      // console.log("Page Akhir : "+Math.ceil(count / perPage))
-      // console.log("Offset : "+offset)  
+        await productModel.count().exec(function(err, count) {
+          if (err) return next(err)
 
-      response.render('guest', {
-        state: '',
-        search:'',
-        result: products,
-        current: page,
-        pages: Math.ceil(count / perPage)
+          response.render('guest', {
+            state: state,
+            search:'',
+            result: products,
+            current: page,
+            pages: Math.ceil(count / perPage),
+            offset: offset,
+            source: source        
+          })
+        })
       })
-    })
-  })
+    } else {
+      let state = 'search'
+      let source = 'dari post'
+
+      console.log(request)
+      console.log(state)
+      console.log(source)
+
+      let options = [{'name': {$regex: '.*' + search.toString() + '.*'}}, {'desc': {$regex: '.*' + search.toString() + '.*'}}, {'price': {$regex: '.*' + search.toString() + '.*'}}, {'owner': {$regex: '.*' + search.toString() + '.*'}}];
+
+      await productModel.find({ $or: options })
+      .skip((perPage * page) - perPage)
+      .limit(perPage)
+      .exec( function(err, products) {
+        // console.log(products)
+
+        productModel.find({ $or: options }).count().exec(function(err, count) {
+          if (err) return next(err)
+
+          // response.render('guest', {
+          //   state: state,
+          //   search: search,
+          //   result: products,
+          //   current: page,
+          //   pages: Math.ceil(count / perPage),
+          //   offset: offset,
+          //   source: source    
+          // })            
+          response.status(200).render('guest', {
+            state: JSON.stringify(state),
+            search: JSON.stringify(search),
+            result: JSON.stringify(products),
+            current: JSON.stringify(page),
+            pages: JSON.stringify(Math.ceil(count / perPage)),
+            offset: JSON.stringify(offset),
+            source: JSON.stringify(source)    
+          })                    
+        })
+      })    
+    }
+  } catch (e) {
+    console.log(e)
+  }
+
 }
 
 exports.addData = (request, response) => {
@@ -162,4 +209,9 @@ exports.postRegistration = async (request, response) => {
       result: err
     })
   })    
+}
+
+exports.logout = (request, response) => {
+  response.clearCookie('user-data');
+  return response.sendStatus(200).render('login');  
 }

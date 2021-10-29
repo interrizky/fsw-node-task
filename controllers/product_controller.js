@@ -379,46 +379,37 @@ exports.fetchGuestTable = async (request, response) => {
     })  
 }
 
-exports.testFunction = (request, response) => {
+exports.testFunction = async (request, response) => {
   let perPage = 4
   // let page = request.params.page || 1
-  let offset = 0;
 
   let search = request.params.search;
   let page = request.params.page || 1 // Page 
 
-  console.log(search)
-  console.log(page)
+  let offset = (perPage * page) - perPage
+
+  let state = 'search'
+  let source = 'dari post'
+
+  // console.log(search)
+  // console.log(page)
 
   let options = [{'name': {$regex: '.*' + search.toString() + '.*'}}, {'desc': {$regex: '.*' + search.toString() + '.*'}}, {'price': {$regex: '.*' + search.toString() + '.*'}}, {'owner': {$regex: '.*' + search.toString() + '.*'}}];
 
-  productModel.find({ $or: options }).skip((perPage * page) - perPage).limit(perPage).exec( function(err, products) {
+  await productModel.find({ $or: options })
+  .skip((perPage * page) - perPage)
+  .limit(perPage)
+  .exec( function(err, products) {
     // console.log(products)
 
     productModel.find({ $or: options }).count().exec(function(err, count) {
       if (err) return next(err)
 
-      console.log("Total Data Hasil Search : "+count)
-      console.log("Page Saat Ini : "+page)
-      console.log("Page Akhir : "+Math.ceil(count / perPage))
-      let state = 'search';
-      // console.log("Offset : "+offset)  
-
-      // response.render('guest', {
-      //   state: JSON.stringify(state),
-      //   search: JSON.stringify(search),
-      //   result: JSON.stringify(products),
-      //   current: JSON.stringify(page),
-      //   pages: JSON.stringify(Math.ceil(count / perPage))
-      // })
-
-      // response.send({
-      //   state: JSON.stringify(state),
-      //   search: JSON.stringify(search),
-      //   result: JSON.stringify(products),
-      //   current: JSON.stringify(page),
-      //   pages: JSON.stringify(Math.ceil(count / perPage))
-      // })      
+      // console.log("Total Data Hasil Search : "+count)
+      // console.log("Page Saat Ini : "+page)
+      // console.log("Page Akhir : "+Math.ceil(count / perPage))
+      // console.log("Offset : "+offset)
+      // console.log("Source : "+source)
 
       /* bisa balikin hasil */
       response.send({
@@ -426,7 +417,9 @@ exports.testFunction = (request, response) => {
         search: search,
         result: products,
         current: page,
-        pages: Math.ceil(count / perPage)
+        pages: Math.ceil(count / perPage),
+        offset: offset,
+        source: source    
       })            
     })
   })  
@@ -435,10 +428,14 @@ exports.testFunction = (request, response) => {
 exports.testFunctionPage = (request, response) => {
   let perPage = 4
   // let page = request.params.page || 1
-  let offset = 0;
 
   let search = request.params.search;
   let page = request.params.page || 1 // Page 
+
+  let offset = (perPage * page) - perPage
+
+  let state = 'search'    
+  let source = 'dari get'
 
   console.log(search)
   console.log(page)
@@ -454,33 +451,28 @@ exports.testFunctionPage = (request, response) => {
       console.log("Total Data Hasil Search : "+count)
       console.log("Page Saat Ini : "+page)
       console.log("Page Akhir : "+Math.ceil(count / perPage))
-      let state = 'search';
-      // console.log("Offset : "+offset)  
+      console.log("Offset : "+offset)
+      console.log("Source : "+source)
 
       response.render('guest', {
         state: state,
         search: search,
         result: products,
         current: page,
-        pages: Math.ceil(count / perPage)
+        pages: Math.ceil(count / perPage),
+        offset: offset,
+        source: source
       })
-
-      // response.send({
-      //   state: JSON.stringify(state),
-      //   search: JSON.stringify(search),
-      //   result: JSON.stringify(products),
-      //   current: JSON.stringify(page),
-      //   pages: JSON.stringify(Math.ceil(count / perPage))
-      // })      
-
-      /* bisa balikin hasil */
+      
       // response.send({
       //   state: state,
       //   search: search,
       //   result: products,
       //   current: page,
-      //   pages: Math.ceil(count / perPage)
-      // })            
+      //   pages: Math.ceil(count / perPage),
+      //   offset: offset,
+      //   source: source
+      // })   
     })
   })  
 }
