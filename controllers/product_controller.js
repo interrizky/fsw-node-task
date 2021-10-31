@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
+const e = require('express');
 
 exports.postData = async(request, response) => {
   try {
@@ -41,19 +42,58 @@ const fileSizeFormatter = (bytes, decimal) => {
 }
 
 exports.listUserTable = (request, response) => {
-  productModel.find({ owner: request.headers.owner.toString() }).sort( {_id: -1} ).exec()
-    .then(resp => {
-    response.send({
-      message: "Displaying Current Collections From MongoDB",
-      result: resp
-    })
-    })
-    .catch(err => {
-    response.send({
-      message: "Failed To Read Data",
-      result: err
-    })
-  })
+  let perPage = 4;
+  let search = request.params.search;
+  let page = 1;
+  let offset = (perPage * page) - perPage;
+
+  console.log(search)
+
+  try {
+    if( search == 'awal' || search == 'undefined' || search == '' || search == null ) {
+      let state = 'dashboard'    
+      let source = 'dari awal dashboard'
+
+      productModel.find({ owner: request.headers.owner.toString() }).skip((perPage * page) - perPage).limit(perPage).exec(function(err, products) {
+        productModel.find({ owner: request.headers.owner.toString() }).count().exec(function(err, count) {
+          if (err) return next(err)
+          response.send({
+            message: "Displaying Current Collections From MongoDB",            
+            state: state,
+            search: search,
+            result: products,
+            current: page,
+            pages: Math.ceil(count / perPage),
+            offset: offset,
+            source: source
+          })
+        })
+      })      
+    } else {
+      let state = 'search'    
+      let source = 'dari search'
+
+      let options = [{'name': {$regex: '.*' + search.toString() + '.*'}}, {'desc': {$regex: '.*' + search.toString() + '.*'}}, {'price': {$regex: '.*' + search.toString() + '.*'}}, {'owner': {$regex: '.*' + search.toString() + '.*'}}];
+
+      productModel.find({ owner: request.headers.owner.toString(), $or: options }).skip((perPage * page) - perPage).limit(perPage).exec(function(err, products) {
+        productModel.find( { owner: request.headers.owner.toString(), $or: options } ) .count().exec(function(err, count) {
+          if (err) return next(err)
+          response.send({
+            message: "Displaying Search Collections From MongoDB",            
+            state: state,
+            search: search,
+            result: products,
+            current: page,
+            pages: Math.ceil(count / perPage),
+            offset: offset,
+            source: source        
+          })
+        })
+      })      
+    }
+  } catch(e) {
+    console.log(e.message)
+  }
 }
 
 exports.listGuestTable = (request, response) => {
@@ -157,7 +197,6 @@ exports.searchDataTable = async (request, response) => {
     }    
   }
 }
-
 
 exports.deleteData = (request, response) => {
   let tokenAuth = request.headers.authorization;
@@ -487,3 +526,61 @@ exports.datatables = async (req, res) => {
   // res.send(JSON.stringify(queries));
 }
 
+exports.fetchUserTable = (request, response) => {
+  let perPage = 4;
+  let page = request.params.page || 1;
+  let search = request.params.search;
+  let offset = (perPage * page) - perPage;
+  let owner = request.headers.owner;
+
+  console.log("BE: "+page);
+  console.log("BE: "+search);
+
+  if( search == 'awal' || search == undefined || search == '' || search == null || search == 'undefined' ) {
+    let state = 'dashboard'    
+    let source = 'dari awal dashboard'
+
+     productModel.find({ owner: owner.toString() })
+      .skip((perPage * page) - perPage)
+      .limit(perPage)
+      .exec(function(err, products) {
+          productModel.find({ owner: owner.toString() }).count().exec(function(err, count) {
+              if (err) return next(err)
+              response.send({
+                message: "Displaying Current Collections From MongoDB",            
+                state: state,
+                search: search,
+                result: products,
+                current: page,
+                pages: Math.ceil(count / perPage),
+                offset: offset,
+                source: source
+              })
+          })
+      })    
+  } else {
+      let state = 'search'    
+      let source = 'dari search'
+
+      let options = [{'name': {$regex: '.*' + search.toString() + '.*'}}, {'desc': {$regex: '.*' + search.toString() + '.*'}}, {'price': {$regex: '.*' + search.toString() + '.*'}}, {'owner': {$regex: '.*' + search.toString() + '.*'}}];
+
+      productModel.find({ owner: request.headers.owner.toString(), $or: options })
+      .skip((perPage * page) - perPage)
+      .limit(perPage)
+      .exec(function(err, products) {
+        productModel.find({ owner: request.headers.owner.toString(), $or: options }).count().exec(function(err, count) {
+          if (err) return next(err)
+          response.send({
+            message: "Displaying Search Collections From MongoDB",            
+            state: state,
+            search: search,
+            result: products,
+            current: page,
+            pages: Math.ceil(count / perPage),
+            offset: offset,
+            source: source 
+          })
+        })
+      })
+  }    
+}

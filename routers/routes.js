@@ -49,7 +49,7 @@ routes.get('/add-data', userController.addData);
 routes.post('/post-data', upload.single('customFile'), productController.postData);
 
 // populate data to table (for user)
-routes.get('/list-user-products', productController.listUserTable);
+routes.get('/list-user-products/:search', productController.listUserTable);
 
 // search data to table
 routes.get('/search-data/:param', productController.searchDataTable);
@@ -63,6 +63,9 @@ routes.get('/find-data/:param', productController.displayData);
 // update data
 // routes.post('/update-data', upload.single('customFile'), productController.updateData);
 routes.post('/update-data', productController.updateData);
+
+// fetch data ke tabel dari onclick pagination yang disetup dari query awal
+routes.post('/fetchTableUser/:page/:search', productController.fetchUserTable)
 
 /* ================================================================= */
 /*                               GUEST                               */
