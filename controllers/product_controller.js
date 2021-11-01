@@ -101,7 +101,7 @@ exports.listGuestTable = (request, response) => {
   let offset = (perPage * page) - perPage;
 
   try {
-    if( search == 'awal' || search == 'undefined' || search == '' || search == null ) {
+    if( search == 'awal' || search == 'undefined' || search == '' || search == null || search == undefined) {
       let state = 'dashboard'    
       let source = 'dari awal dashboard'
 
@@ -597,4 +597,60 @@ exports.fetchUserTable = (request, response) => {
         })
       })
   }    
+}
+
+exports.fetchGuestTable = (request, response) => {
+  let perPage = 4;
+  let page = request.params.page || 1;
+  let search = request.params.search;
+  let offset = (perPage * page) - perPage;
+  let owner = request.headers.owner;
+
+  if( search == 'awal' || search == 'undefined' || search == '' || search == null || search == undefined) {
+    let state = 'dashboard'    
+    let source = 'dari awal dashboard'
+
+     productModel.find({})
+      .skip((perPage * page) - perPage)
+      .limit(perPage)
+      .exec(function(err, products) {
+          productModel.find({}).count().exec(function(err, count) {
+              if (err) return next(err)
+              response.send({
+                message: "Displaying Current Collections From MongoDB",            
+                state: state,
+                search: search,
+                result: products,
+                current: page,
+                pages: Math.ceil(count / perPage),
+                offset: offset,
+                source: source
+              })
+          })
+      })    
+  } else {
+      let state = 'search'    
+      let source = 'dari search'
+
+      let options = [{'name': {$regex: '.*' + search.toString() + '.*'}}, {'desc': {$regex: '.*' + search.toString() + '.*'}}, {'price': {$regex: '.*' + search.toString() + '.*'}}, {'owner': {$regex: '.*' + search.toString() + '.*'}}];
+
+      productModel.find({$or: options})
+      .skip((perPage * page) - perPage)
+      .limit(perPage)
+      .exec(function(err, products) {
+        productModel.find({$or: options}).count().exec(function(err, count) {
+          if (err) return next(err)
+          response.send({
+            message: "Displaying Search Collections From MongoDB",            
+            state: state,
+            search: search,
+            result: products,
+            current: page,
+            pages: Math.ceil(count / perPage),
+            offset: offset,
+            source: source 
+          })
+        })
+      })
+  }      
 }

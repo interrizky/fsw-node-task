@@ -57,6 +57,12 @@ routes.post('/fetchTableUser/:page/:search', productController.fetchUserTable)
 // pagination (dari query load manual ke ejs, lalu kasi onclick func di tiap button)
 // onsite url (tidak berubah)
 routes.get('/dashboard-guest', userController.dashboardGuest);
+// populate data to table (1st time)
+routes.get('/list-guest-products/:search', productController.listGuestTable);
+// fetch data ke tabel dari onclick pagination yang disetup dari query
+routes.post('/fetchTableGuest/:page/:search', productController.fetchGuestTable)
+
+
 // fetch data ke tabel dari onclick pagination yang disetup dari query awal
 routes.post('/fetchTablePage/:page', productController.fetchGuestTable)
 

@@ -37,7 +37,7 @@
     <!-- navbar -->
 
     <!-- row alert -->
-    <div class="alert alert-primary alert-dismissible show my-3" role="alert">
+    <div class="alert alert-primary alert-dismissible show my-3" id="row-alert" role="alert">
       <i>Displaying All Collections From MongoDB</i>
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
@@ -68,67 +68,7 @@
         </div>
         <div class="wrapper-pagination col-md-4 justify-content-end p-0">
           <ul class="pagination pagination-list pagination-md m-0 p-0 justify-content-end">
-          
-            <!-- if else : 1 (dari dashboard), 2 (dari search) -->
-          <% if (pages > 0) { %>
-            <% if(state == 'dashboard') { %>
-                <% if (Number(current) == 1) { %>
-                    <li class="page-item disabled"><a class="page-link">First</a></li>
-                <% } else { %>
-                    <li class="page-item"><a class="page-link" onclick="fetchTable(1);return false;">First</a></li>
-                <% } %>
-                <% let i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
-                <% if (i !== 1) { %>
-                    <li class="page-item disabled"><a class="page-link">...</a></li>
-                <% } %>
-                <% for (; i <= (Number(current) + 4) && i <= pages; i++) { %>
-                    <% if (i == 0) { %>
-                        <li class="page-item active"><a class="page-link"><%= i %></a></li>
-                    <% } else { %>
-                        <li class="page-item"><a class="page-link" onclick="fetchTable('<%= i %>');return false;"><%= i %></a></li>
-                    <% } %>
-                    <% if (i == Number(current) + 4 && i < pages) { %>
-                        <li class="page-item disabled"><a>...</a></li>
-                    <% } %>
-                <% } %>
-                <% if (Number(current) == pages) { %>
-                    <li class="page-item disabled"><a class="page-link">Last</a></li>
-                <% } else { %>
-                    <li class="page-item">
-                      <a class="page-link" onclick="fetchTable('<%= pages %>');return false;">Last</a>
-                    </li>
-                <% } %>
-            <% } else { %>
-                <% if (Number(current) == 1) { %>
-                    <li class="page-item disabled"><a class="page-link">First</a></li>
-                <% } else { %>
-                    <li class="page-item"><a class="page-link" href="/dashboard-guest/<%= search %>/1">First</a></li>
-                <% } %>
-                <% let i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
-                <% if (i !== 1) { %>
-                    <li class="page-item disabled"><a class="page-link">...</a></li>
-                <% } %>
-                <% for (; i <= (Number(current) + 4) && i <= pages; i++) { %>
-                    <% if (i == 0) { %>
-                        <li class="page-item active"><a class="page-link"><%= i %></a></li>
-                    <% } else { %>
-                        <li class="page-item"><a class="page-link" href="/dashboard-guest/<%= search %>/<%= i %>"><%= i %></a></li>
-                    <% } %>
-                    <% if (i == Number(current) + 4 && i < pages) { %>
-                        <li class="page-item disabled"><a>...</a></li>
-                    <% } %>
-                <% } %>
-                <% if (Number(current) == pages) { %>
-                    <li class="page-item disabled"><a class="page-link">Last</a></li>
-                <% } else { %>
-                    <li class="page-item">
-                      <a class="page-link" href="/dashboard-guest/<%= search %>/<%= pages %>">
-                        Last
-                      </a>
-                    </li>
-                <% } %>
-            <% } %>
-          <% } %>                 
+                         
           </ul>
         </div>        
     </div>
@@ -148,24 +88,8 @@
               <th scope="col" class="text-center" style="width: 10%;">Action</th>
             </tr>            
           </thead>
-          <tbody class="table-body">
-            <% for(let i=0; i < result.length; i++) { %>
-            <tr>
-               <td scope="col" class="text-center"><%= i+1 %></td>
-               <td scope="col" class="text-center"><i><%= result[i].name %></i></td>
-               <td scope="col" class="text-center"><%= Number(result[i].price).toLocaleString('id-ID') %></td>
-               <td scope="col" class="text-center"><p class="text-justify text-wrap font-italic"><%= result[i].desc %></p></td>
-               <td scope="col" class="text-center"><%= result[i].owner %></td>
-               <% if(result[i].quantity > 0) { %>
-                <td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>
-               <% } else { %>
-                <td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>                
-               <% } %>
-               <td scope="col" class="text-center">
-                 <button type="button" name="btnDetail" id="btnDetail" class="btn btnDetail btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal" data-action="popup" data-path="<%= result[i].filePath %>" data-price="<%= result[i].price %>" data-name="<%= result[i].name %>" data-whatever="<%= result[i]._id %>"><i class="fa fa-images"></i></button>
-               </td>               
-            <% } %>
-            </tr>
+          <tbody class="table-body" id="table-body">
+
           </tbody>
         </table>      
     </div>
@@ -222,6 +146,7 @@ async function getDataTables() {
 }
 
 getDataTables().then(result => {
+  console.log(result)
   /* untuk alert */
   document.querySelector('#row-alert').innerHTML = `
     <b>${ result.message }</b>
@@ -285,7 +210,7 @@ document.querySelector('#btnSearch').addEventListener('click', (event) => {
     if( document.querySelector('#search').value == '' || document.querySelector('#search').value == null ) {
       alert('Masukkan Keyword Pencarian');
     } else {
-      fetch('/list-user-products/'+document.querySelector('#search').value, {
+      fetch('/list-guest-products/'+document.querySelector('#search').value, {
         method: 'GET', 
         headers: {
           'Content-Type': 'application/json',
