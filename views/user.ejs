@@ -281,46 +281,6 @@ document.querySelector('#btnSearch').addEventListener('click', (event) => {
     if( document.querySelector('#search').value == '' || document.querySelector('#search').value == null ) {
       alert('Masukkan Keyword Pencarian');
     } else {
-      // fetch('/search-data/'+document.querySelector('#search').value, {
-      //   method: 'GET',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Owner': JSON.parse(getCookies('user-data')).username,
-      //     'Authorization': 'Bearer '+JSON.parse(getCookies('user-data')).token             
-      //   }      
-      // }).then(response => {
-      //   return response.json()
-      // }).then(result => {
-      //   console.log(result)
-
-      //   document.querySelector('#row-alert').innerHTML = `
-      //     <b>${ result.message }</b>
-      //     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      //       <span aria-hidden="true">&times;</span>
-      //     </button>      
-      //   `;
-
-      //   document.querySelector('#table-body').innerHTML = '';
-      //   for( let i=0; i < result.result.length; i++ ) {
-      //     document.querySelector('#table-body').innerHTML += `
-      //       <tr>
-      //           <td scope="col" class="text-center">${ i+1 }</td>
-      //           <td scope="col" class="text-center"><i>${ result.result[i].name }</i></td>
-      //           <td scope="col" class="text-center">${ Number(result.result[i].price).toLocaleString('id-ID') }</td>
-      //           <td scope="col" class="text-center"><p class="text-justify text-wrap font-italic">${ result.result[i].desc }</p></td>
-      //           <td scope="col" class="text-center">${ result.result[i].owner }</td>
-      //           ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
-      //           <td scope="col" class="text-center">
-      //             <button type="button" name="btnDetail" id="btnDetail" class="btn btnDetail btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal" data-action="popup" data-path="${ result.result[i].filePath }" data-price="${ result.result[i].price }" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-images"></i></button>
-      //             <a class="btn btn-sm btn-outline-success" name="btnEdit" id="btnEdit" href="/find-data/${ result.result[i].id }" role="button"><i class="fa fa-pencil"></i></a>
-      //             <button type="button" name="btnDelete" id="btnDelete" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-action="remove" data-target="#exampleModal" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-dumpster"></i></button>
-      //           </td>
-      //         </tr>   
-      //     `;
-      //   }
-      // }).catch(error => {
-      //   console.log(error)
-      // })
       fetch('/list-user-products/'+document.querySelector('#search').value, {
         method: 'GET', 
         headers: {

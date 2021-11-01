@@ -201,6 +201,192 @@
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
 <script src="https://pro.fontawesome.com/releases/v5.10.0/js/all.js" integrity="sha384-G/ZR3ntz68JZrH4pfPJyRbjW+c0+ojii5f+GYiYwldYU69A+Ejat6yIfLSxljXxD" crossorigin="anonymous"></script>
 <script type="text/javascript">
+/* load data to table and create pagination with search = null */
+async function getDataTables() {
+  const response = await fetch('/list-guest-products/'+'awal', {
+    method: 'GET', 
+    headers: {
+      'Content-Type': 'application/json',
+      'Owner': JSON.parse(getCookies('user-data')).username,
+      // 'Authorization': 'Bearer '+JSON.parse(getCookies('user-data')).token
+    }
+  })
+  // error handling - throw ke catch error
+  if (!response.ok) {
+    const message = `An error has occured: ${response.status} & Text : ${response.statusText}`;
+    throw new Error(message);
+  }
+  const result = await response.json();
+
+  return result;
+}
+
+getDataTables().then(result => {
+  /* untuk alert */
+  document.querySelector('#row-alert').innerHTML = `
+    <b>${ result.message }</b>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>      
+  `;
+
+  /* untuk pagination */
+  document.querySelector('.pagination-list').innerHTML = '';
+  Number(result.current) == 1 ? document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link">First</a></li>` : `<li class="page-item"><a class="page-link" onclick="fetchTableGuest(1);return false;">First</a></li>`;
+  let i = (Number(result.current) > 5 ? Number(result.current) - 4 : 1)
+  if (i !== 1) {
+    document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link">...</a></li>`;
+  }
+  for (; i <= (Number(result.current) + 4) && i <= result.pages; i++) {  
+    if (i == 0) {
+      document.querySelector('.pagination-list').innerHTML += `<li class="page-item active"><a class="page-link">${ i }</a></li>`;
+    } else {
+      document.querySelector('.pagination-list').innerHTML += `<li class="page-item"><a class="page-link" onclick="fetchTableGuest('${ i }');return false;">${ i }</a></li>`;
+    }
+  }
+  if (Number(result.current) == result.pages) {
+    document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link">Last</a></li>`;
+  } else {
+    document.querySelector('.pagination-list').innerHTML += `        
+      <li class="page-item">
+        <a class="page-link" onclick="fetchTableGuest(${ result.pages });return false;">Last</a>
+      </li>  `;
+  }
+
+  /* untuk isi table */
+  document.querySelector('#table-body').innerHTML = '';
+  for( let i=0; i < result.result.length; i++ ) {
+    document.querySelector('#table-body').innerHTML += `
+      <tr>
+          <td scope="col" class="text-center">${ i+1 }</td>
+          <td scope="col" class="text-center"><i>${ result.result[i].name }</i></td>
+          <td scope="col" class="text-center">${ Number(result.result[i].price).toLocaleString('id-ID') }</td>
+          <td scope="col" class="text-center"><p class="text-justify text-wrap font-italic">${ result.result[i].desc }</p></td>
+          <td scope="col" class="text-center">${ result.result[i].owner }</td>
+          ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
+          <td scope="col" class="text-center">
+            <button type="button" name="btnDetail" id="btnDetail" class="btn btnDetail btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal" data-action="popup" data-path="${ result.result[i].filePath }" data-price="${ result.result[i].price }" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-images"></i></button>
+          </td>
+        </tr>   
+    `;
+  }
+}).catch(error => {
+  console.log(error);
+})
+/* end fetch */
+
+/* search and pop data into tables */
+document.querySelector('#btnSearch').addEventListener('click', (event) => {
+  // kalo cookies di-delete
+  if( getCookies('user-data') == null || getCookies('user-data') == undefined) {
+    alert('Silahkan Login Terlebih Dahulu');
+    location.href = '/homepage';
+  } else {
+    if( document.querySelector('#search').value == '' || document.querySelector('#search').value == null ) {
+      alert('Masukkan Keyword Pencarian');
+    } else {
+      fetch('/list-user-products/'+document.querySelector('#search').value, {
+        method: 'GET', 
+        headers: {
+          'Content-Type': 'application/json',
+          'Owner': JSON.parse(getCookies('user-data')).username,
+          // 'Authorization': 'Bearer '+JSON.parse(getCookies('user-data')).token
+        }
+      }).then(response => {
+        return response.json();
+      }).then(result => {
+        console.log(result);
+        console.log(result.search);
+
+        /* untuk alert */
+        document.querySelector('#row-alert').innerHTML = `
+          <b>${ result.message }</b>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>      
+        `;
+
+        /* untuk pagination */
+        document.querySelector('.pagination-list').innerHTML = '';
+        Number(result.current) == 1 ? document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link" id="a-satu">First</a></li>` : `<li class="page-item"><a class="page-link" id="a-satu" onclick="fetchTableGuest(${Number(result.current)},'${result.search}');">First</a></li>`;
+        let i = (Number(result.current) > 5 ? Number(result.current) - 4 : 1)
+        if (i !== 1) {
+          document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link">...</a></li>`;
+        }
+        for (; i <= (Number(result.current) + 4) && i <= result.pages; i++) {  
+          if (i == 0) {
+            document.querySelector('.pagination-list').innerHTML += `<li class="page-item active"><a class="page-link">${ i }</a></li>`;
+          } else {
+            document.querySelector('.pagination-list').innerHTML += `<li class="page-item"><a class="page-link" onclick="fetchTableGuest(${i},'${result.search}');">${ i }</a></li>`;
+          }
+        }
+        if (Number(result.current) == result.pages) {
+          document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link">Last</a></li>`;
+        } else {
+          document.querySelector('.pagination-list').innerHTML += `<li class="page-item"><a class="page-link" onclick="fetchTableGuest(${result.pages},'${result.search}');">Last</a></li>`;
+        }
+
+        /* untuk isi table */
+        document.querySelector('#table-body').innerHTML = '';
+        for( let i=0; i < result.result.length; i++ ) {
+          document.querySelector('#table-body').innerHTML += `
+            <tr>
+                <td scope="col" class="text-center">${ i+1 }</td>
+                <td scope="col" class="text-center"><i>${ result.result[i].name }</i></td>
+                <td scope="col" class="text-center">${ Number(result.result[i].price).toLocaleString('id-ID') }</td>
+                <td scope="col" class="text-center"><p class="text-justify text-wrap font-italic">${ result.result[i].desc }</p></td>
+                <td scope="col" class="text-center">${ result.result[i].owner }</td>
+                ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
+                <td scope="col" class="text-center">
+                  <button type="button" name="btnDetail" id="btnDetail" class="btn btnDetail btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal" data-action="popup" data-path="${ result.result[i].filePath }" data-price="${ result.result[i].price }" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-images"></i></button>
+                </td>
+              </tr>   
+          `;
+        }
+      }).catch(error => {
+        console.log(error);
+      })
+    }    
+  }
+})
+
+/* fetch isi table - pagination */
+function fetchTableGuest(page, search) {
+  const response = fetch('/fetchTableGuest/'+page+'/'+search, {
+  // const response = fetch(`/fetchTableGuest/${page}/${search}`, {
+    method: 'POST',
+    headers: { 
+      'Content-Type': 'application/json', 
+      'Owner': JSON.parse(getCookies('user-data')).username,
+      // 'Authorization': 'Bearer '+JSON.parse(getCookies('user-data')).token  
+    }
+  }).then(response => {
+    return response.json();
+  }).then(result => {
+    console.log(result);
+
+    /* table */
+    document.querySelector('.table-body').innerHTML = '';
+    for( let i=0; i < result.result.length; i++ ) {
+      document.querySelector('.table-body').innerHTML += `
+        <tr>
+            <td scope="col" class="text-center">${ i+(Number(result.offset)+1) }</td>
+            <td scope="col" class="text-center"><i>${ result.result[i].name }</i></td>
+            <td scope="col" class="text-center">${ Number(result.result[i].price).toLocaleString('id-ID') }</td>
+            <td scope="col" class="text-center"><p class="text-justify text-wrap font-italic">${ result.result[i].desc }</p></td>
+            <td scope="col" class="text-center">${ result.result[i].owner }</td>
+            ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
+            <td scope="col" class="text-center">
+              <button type="button" name="btnDetail" id="btnDetail" class="btn btnDetail btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal" data-action="popup" data-path="${ result.result[i].filePath }" data-price="${ result.result[i].price }" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-images"></i></button>
+            </td>
+        </tr>   
+      `;
+    }
+  }).catch(error => {
+    console.log(error);
+  })
+}
+
 /* pagination normal */
 async function fetchTable(params) {
   const response = fetch('/fetchTablePage/'+params, {
@@ -346,101 +532,5 @@ $('#exampleModal').on('show.bs.modal', function (event) {
   }
 })
 
-/* input search then popup result and pagination */
-document.querySelector('#btnSearch').addEventListener('click', async (event) => {
-  let search = await document.querySelector('#search').value;
-
-  if( search == '' || search == null ) {
-    alert('Masukkan Keyword Pencarian');
-  } else {
-    let url = '/dashboard-guest/outpost/'+document.querySelector('#search').value+'/'+1;
-    // let url = '/dashboard-guest/'+document.querySelector('#search').value+'/'+1
-    // let url = '/dashboard-guest/'
-    const hasil = await fetch(url, {
-      method: 'POST',
-      // method: "GET",
-      headers: {
-        'Content-Type': 'application/json',
-        // 'Owner': JSON.parse(getCookies('user-data')).username,
-        // 'Authorization': 'Bearer '+JSON.parse(getCookies('user-data')).token              
-      },
-      // body: JSON.stringify({
-      //   search: document.querySelector('#search').value,
-      //   page: 1
-      // })
-    })
-    .then(response => {
-      return response.json();
-    })
-    .then(result => {
-      console.log(result)
-      console.log(result.result)
-      console.log(result.offset)
-
-      /* pagination-list */
-      let pagelist = document.querySelector('.pagination-list');
-      pagelist.innerHTML = ''
-
-      if(result.state == 'search') {
-        /* pagination */
-        if( Number(result.current) == 1 ) {
-          pagelist.innerHTML += `<li class="page-item disabled"><a class="page-link">First</a></li>`;
-        } else {
-          pagelist.innerHTML += `<li class="page-item"><a class="page-link" href="/dashboard-guest/${result.search}/1">First</a></li>`;
-        }
-
-        let i = (Number(result.current) > 5 ? Number(result.current) - 4 : 1)
-        if( i !== 1 ) {
-          pagelist.innerHTML += `<li class="page-item disabled"><a class="page-link">...</a></li>`;
-        }
-
-        for( ; i <= (Number(result.current) + 4) && i <= result.pages; i++ ) {
-          if( i == 0 ) {
-            pagelist.innerHTML += `<li class="page-item active"><a class="page-link">${i}</a></li>`;
-          } else {
-            pagelist.innerHTML += `<li class="page-item"><a class="page-link" href="/dashboard-guest/${result.search}/${i}">${i}</a></li>`;
-          }
-
-          if( i == Number(result.current) + 4 && i < result.pages ) {
-            pagelist.innerHTML += `<li class="page-item disabled"><a>...</a></li>`;
-          }
-        }
-
-        if( Number(result.current) == result.pages ) {
-          pagelist.innerHTML += `<li class="page-item disabled"><a class="page-link">Last</a></li>`;
-        } else {
-          pagelist.innerHTML += `                
-            <li class="page-item">
-              <a class="page-link" href="/dashboard-guest/${result.search}/${result.pages}">
-                Last
-              </a>
-            </li>
-          `;
-        }
-
-        /* table body */
-        document.querySelector('.table-body').innerHTML = '';
-        for( let i=0; i < result.result.length; i++ ) {
-          document.querySelector('.table-body').innerHTML += `
-            <tr>
-              <td scope="col" class="text-center">${ i+(Number(result.offset)+1) }</td>
-              <td scope="col" class="text-center"><i>${ result.result[i].name }</i></td>
-              <td scope="col" class="text-center">${ Number(result.result[i].price).toLocaleString('id-ID') }</td>
-              <td scope="col" class="text-center"><p class="text-justify text-wrap font-italic">${ result.result[i].desc }</p></td>
-              <td scope="col" class="text-center">${ result.result[i].owner }</td>
-              ${ result.result[i].quantity > 0 ? `<td scope="col" class="text-center"><span class="badge badge-pill badge-success">Available</span></td>` : `<td scope="col" class="text-center"><span class="badge badge-pill badge-danger">Out of Stock</span></td>` }
-              <td scope="col" class="text-center">
-                <button type="button" name="btnDetail" id="btnDetail" class="btn btnDetail btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal" data-action="popup" data-path="${ result.result[i].filePath }" data-price="${ result.result[i].price }" data-name="${ result.result[i].name }" data-whatever="${ result.result[i]._id }"><i class="fa fa-images"></i></button>
-              </td>
-            </tr> 
-          `;
-        }             
-      } 
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  }
-})
 </script>
 </html>

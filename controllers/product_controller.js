@@ -47,8 +47,6 @@ exports.listUserTable = (request, response) => {
   let page = 1;
   let offset = (perPage * page) - perPage;
 
-  console.log(search)
-
   try {
     if( search == 'awal' || search == 'undefined' || search == '' || search == null ) {
       let state = 'dashboard'    
@@ -97,37 +95,56 @@ exports.listUserTable = (request, response) => {
 }
 
 exports.listGuestTable = (request, response) => {
-  
-  productModel.find().sort( {_id: -1} ).exec()
+  let perPage = 4;
+  let search = request.params.search;
+  let page = 1;
+  let offset = (perPage * page) - perPage;
 
-  console.log("LGT : "+request)
+  try {
+    if( search == 'awal' || search == 'undefined' || search == '' || search == null ) {
+      let state = 'dashboard'    
+      let source = 'dari awal dashboard'
 
-  // const tradesCollection = await productModel.find().skip(offset).limit(limit)
+      productModel.find({}).skip((perPage * page) - perPage).limit(perPage).exec(function(err, products) {
+        productModel.find({}).count().exec(function(err, count) {
+          if (err) return next(err)
+          response.send({
+            message: "Displaying Current Collections From MongoDB",            
+            state: state,
+            search: search,
+            result: products,
+            current: page,
+            pages: Math.ceil(count / perPage),
+            offset: offset,
+            source: source
+          })
+        })
+      })      
+    } else {
+      let state = 'search'    
+      let source = 'dari search'
 
-  // const tradesCollectionCount = await productModel.count()
+      let options = [{'name': {$regex: '.*' + search.toString() + '.*'}}, {'desc': {$regex: '.*' + search.toString() + '.*'}}, {'price': {$regex: '.*' + search.toString() + '.*'}}, {'owner': {$regex: '.*' + search.toString() + '.*'}}];
 
-  // const totalPages = Math.ceil(tradesCollectionCount / limit)
-  // const currentPage = Math.ceil(tradesCollectionCount % offset)
-    // res.status(200).send({
-    //   data: tradesCollection,
-    //   paging: {
-    //     total: tradesCollectionCount,
-    //     page: currentPage,
-    //     pages: totalPages,
-    //   },  
-
-  .then(resp => {
-    response.send({
-      message: "Displaying Current Collections From MongoDB",
-      result: resp
-    })
-  })
-  .catch(err => {
-    response.send({
-      message: "Failed To Read Data",
-      result: err
-    })
-  })
+      productModel.find({$or: options}).skip((perPage * page) - perPage).limit(perPage).exec(function(err, products) {
+        productModel.find({$or: options}) .count().exec(function(err, count) {
+          if (err) return next(err)
+          response.send({
+            message: "Displaying Search Collections From MongoDB",            
+            state: state,
+            search: search,
+            result: products,
+            current: page,
+            pages: Math.ceil(count / perPage),
+            offset: offset,
+            source: source        
+          })
+        })
+      })      
+    }
+  } catch(e) {
+    console.log(e.message)
+  }
 }
 
 exports.searchDataTable = async (request, response) => {
@@ -532,9 +549,6 @@ exports.fetchUserTable = (request, response) => {
   let search = request.params.search;
   let offset = (perPage * page) - perPage;
   let owner = request.headers.owner;
-
-  console.log("BE: "+page);
-  console.log("BE: "+search);
 
   if( search == 'awal' || search == undefined || search == '' || search == null || search == 'undefined' ) {
     let state = 'dashboard'    
