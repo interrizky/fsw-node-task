@@ -100,7 +100,7 @@ exports.viewRegister = (request, response) => {
 exports.postRegistration = async (request, response) => {
   let datax = await request.body;
 
-  const options = new userRegistrationModel({
+  const options = new userModel({
     username: datax.username,
     password: datax.password,
     email: datax.email,
@@ -109,7 +109,7 @@ exports.postRegistration = async (request, response) => {
   })
 
   /* saving to database then sending to frontend - grab in callback result */
-  userModel.save(options)
+  options.save(options)
   .then(res => {
     response.send({
       message: "Success",
