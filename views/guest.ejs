@@ -236,7 +236,7 @@ document.querySelector('#btnSearch').addEventListener('click', (event) => {
         /* untuk pagination */
         document.querySelector('.pagination-list').innerHTML = '';
         if(result.result.length > 0) {
-          parseInt(result.current) == 1 ? document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link" id="a-satu">First</a></li>` : document.querySelector('.pagination-list').innerHTML += `<li class="page-item"><a class="page-link" id="a-satu" onclick="fetchTableGuest(${parseInt(result.current)},'${result.search}');">First</a></li>`;
+          parseInt(result.current) == 1 ? document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link" id="a-satu">First</a></li>` : document.querySelector('.pagination-list').innerHTML += `<li class="page-item"><a class="page-link" id="a-satu" onclick="fetchTableGuest(1,'${result.search}');">First</a></li>`;
           let i = (parseInt(result.current) > 5 ? parseInt(result.current) - 4 : 1)
           if (i !== 1) {
             document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link">...</a></li>`;
@@ -297,7 +297,7 @@ function fetchTableGuest(page, search) {
     /* untuk pagination */
     document.querySelector('.pagination-list').innerHTML = '';
     if(result.result.length > 0) {
-      parseInt(result.current) == 1 ? document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link" id="a-satu">First</a></li>` : document.querySelector('.pagination-list').innerHTML += `<li class="page-item"><a class="page-link" id="a-satu" onclick="fetchTableGuest(${parseInt(result.current)},'${result.search}');">First</a></li>`;
+      parseInt(result.current) == 1 ? document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link" id="a-satu">First</a></li>` : document.querySelector('.pagination-list').innerHTML += `<li class="page-item"><a class="page-link" id="a-satu" onclick="fetchTableGuest(1,'${result.search}');">First</a></li>`;
       let i = (parseInt(result.current) > 5 ? parseInt(result.current) - 4 : 1)
       if (i !== 1) {
         document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link">...</a></li>`;

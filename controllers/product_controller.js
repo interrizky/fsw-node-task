@@ -71,7 +71,7 @@ exports.listUserTable = (request, response) => {
       let state = 'search'    
       let source = 'dari search'
 
-      let options = [{'name': {$regex: '.*' + search.toString() + '.*'}}, {'desc': {$regex: '.*' + search.toString() + '.*'}}, {'price': {$regex: '.*' + search.toString() + '.*'}}, {'owner': {$regex: '.*' + search.toString() + '.*'}}];
+      let options = [{'name': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}, {'desc': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}, {'price': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}, {'owner': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}];
 
       productModel.find({ owner: request.headers.owner.toString(), $or: options }).skip((perPage * page) - perPage).limit(perPage).exec(function(err, products) {
         productModel.find( { owner: request.headers.owner.toString(), $or: options } ) .count().exec(function(err, count) {
@@ -124,7 +124,7 @@ exports.listGuestTable = (request, response) => {
       let state = 'search'    
       let source = 'dari search'
 
-      let options = [{'name': {$regex: '.*' + search.toString() + '.*'}}, {'desc': {$regex: '.*' + search.toString() + '.*'}}, {'price': {$regex: '.*' + search.toString() + '.*'}}, {'owner': {$regex: '.*' + search.toString() + '.*'}}];
+      let options = [{'name': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}, {'desc': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}, {'price': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}, {'owner': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}];
 
       productModel.find({$or: options}).skip((perPage * page) - perPage).limit(perPage).exec(function(err, products) {
         productModel.find({$or: options}) .count().exec(function(err, count) {
@@ -157,7 +157,7 @@ exports.searchDataTable = async (request, response) => {
   let page = request.params.page || 1
 
   if( owner == 'guest' ) {
-    let options = [{'name': {$regex: '.*' + param.toString() + '.*'}}, {'desc': {$regex: '.*' + param.toString() + '.*'}}, {'price': {$regex: '.*' + param.toString() + '.*'}}, {'owner': {$regex: '.*' + param.toString() + '.*'}}];
+    let options = [{'name': {$regex: '.*' + param.toString() + '.*', $options: 'i'}}, {'desc': {$regex: '.*' + param.toString() + '.*', $options: 'i'}}, {'price': {$regex: '.*' + param.toString() + '.*', $options: 'i'}}, {'owner': {$regex: '.*' + param.toString() + '.*', $options: 'i'}}];
 
     await productModel.find({ $or: options }).skip((perPage * page) - perPage).limit(perPage).exec(async function(err, products) {
       console.log(products)
@@ -193,10 +193,10 @@ exports.searchDataTable = async (request, response) => {
           response.status(401).send( {message: 'failed to get token', status: 401} );
         } else {
           productModel.find({'owner': owner.toString(), $or: [
-            {'name': {$regex: '.*' + param.toString() + '.*'}}, 
-            {'desc': {$regex: '.*' + param.toString() + '.*'}}, 
-            {'price': {$regex: '.*' + param.toString() + '.*'}}, 
-            {'owner': {$regex: '.*' + param.toString() + '.*'}}
+            {'name': {$regex: '.*' + param.toString() + '.*', $options: 'i'}}, 
+            {'desc': {$regex: '.*' + param.toString() + '.*', $options: 'i'}}, 
+            {'price': {$regex: '.*' + param.toString() + '.*', $options: 'i'}}, 
+            {'owner': {$regex: '.*' + param.toString() + '.*', $options: 'i'}}
           ]}).exec()
           .then(resp => {
             response.send({
@@ -452,7 +452,7 @@ exports.testFunction = async (request, response) => {
   // console.log(search)
   // console.log(page)
 
-  let options = [{'name': {$regex: '.*' + search.toString() + '.*'}}, {'desc': {$regex: '.*' + search.toString() + '.*'}}, {'price': {$regex: '.*' + search.toString() + '.*'}}, {'owner': {$regex: '.*' + search.toString() + '.*'}}];
+  let options = [{'name': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}, {'desc': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}, {'price': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}, {'owner': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}];
 
   await productModel.find({ $or: options })
   .skip((perPage * page) - perPage)
@@ -498,7 +498,7 @@ exports.testFunctionPage = (request, response) => {
   console.log(search)
   console.log(page)
 
-  let options = [{'name': {$regex: '.*' + search.toString() + '.*'}}, {'desc': {$regex: '.*' + search.toString() + '.*'}}, {'price': {$regex: '.*' + search.toString() + '.*'}}, {'owner': {$regex: '.*' + search.toString() + '.*'}}];
+  let options = [{'name': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}, {'desc': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}, {'price': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}, {'owner': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}];
 
   productModel.find({ $or: options }).skip((perPage * page) - perPage).limit(perPage).exec( function(err, products) {
     // console.log(products)
@@ -576,7 +576,7 @@ exports.fetchUserTable = (request, response) => {
       let state = 'search'    
       let source = 'dari search'
 
-      let options = [{'name': {$regex: '.*' + search.toString() + '.*'}}, {'desc': {$regex: '.*' + search.toString() + '.*'}}, {'price': {$regex: '.*' + search.toString() + '.*'}}, {'owner': {$regex: '.*' + search.toString() + '.*'}}];
+      let options = [{'name': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}, {'desc': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}, {'price': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}, {'owner': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}];
 
       productModel.find({ owner: request.headers.owner.toString(), $or: options })
       .skip((perPage * page) - perPage)
@@ -632,7 +632,7 @@ exports.fetchGuestTable = (request, response) => {
       let state = 'search'    
       let source = 'dari search'
 
-      let options = [{'name': {$regex: '.*' + search.toString() + '.*'}}, {'desc': {$regex: '.*' + search.toString() + '.*'}}, {'price': {$regex: '.*' + search.toString() + '.*'}}, {'owner': {$regex: '.*' + search.toString() + '.*'}}];
+      let options = [{'name': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}, {'desc': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}, {'price': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}, {'owner': {$regex: '.*' + search.toString() + '.*', $options: 'i'}}];
 
       productModel.find({$or: options})
       .skip((perPage * page) - perPage)
