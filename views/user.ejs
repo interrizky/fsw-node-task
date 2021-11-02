@@ -225,19 +225,19 @@ getDataTables().then(result => {
   /* untuk pagination */
   document.querySelector('.pagination-list').innerHTML = '';
   if(result.result.length > 0) {
-    Number(result.current) == 1 ? document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link">First</a></li>` : `<li class="page-item"><a class="page-link" onclick="fetchTableUser(1);return false;">First</a></li>`;
-    let i = (Number(result.current) > 5 ? Number(result.current) - 4 : 1)
+    parseInt(result.current) == 1 ? document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link">First</a></li>` : document.querySelector('.pagination-list').innerHTML += `<li class="page-item"><a class="page-link" onclick="fetchTableUser(1);return false;">First</a></li>`;
+    let i = (parseInt(result.current) > 5 ? parseInt(result.current) - 4 : 1)
     if (i !== 1) {
       document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link">...</a></li>`;
     }
-    for (; i <= (Number(result.current) + 4) && i <= result.pages; i++) {  
+    for (; i <= (parseInt(result.current) + 4) && i <= result.pages; i++) {  
       if (i == 0) {
         document.querySelector('.pagination-list').innerHTML += `<li class="page-item active"><a class="page-link">${ i }</a></li>`;
       } else {
         document.querySelector('.pagination-list').innerHTML += `<li class="page-item"><a class="page-link" onclick="fetchTableUser('${ i }');return false;">${ i }</a></li>`;
       }
     }
-    if (Number(result.current) == result.pages) {
+    if (parseInt(result.current) == result.pages) {
       document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link">Last</a></li>`;
     } else {
       document.querySelector('.pagination-list').innerHTML += `        
@@ -293,7 +293,6 @@ document.querySelector('#btnSearch').addEventListener('click', (event) => {
         return response.json();
       }).then(result => {
         console.log(result);
-        console.log(result.search);
 
         /* untuk alert */
         document.querySelector('#row-alert').innerHTML = `
@@ -306,19 +305,19 @@ document.querySelector('#btnSearch').addEventListener('click', (event) => {
         /* untuk pagination */
         document.querySelector('.pagination-list').innerHTML = '';
         if(result.result.length > 0) {
-          Number(result.current) == 1 ? document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link" id="a-satu">First</a></li>` : `<li class="page-item"><a class="page-link" id="a-satu" onclick="fetchTableUser(${Number(result.current)},'${result.search}');">First</a></li>`;
-          let i = (Number(result.current) > 5 ? Number(result.current) - 4 : 1)
+          parseInt(result.current) == 1 ? document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link" id="a-satu">First</a></li>` : `<li class="page-item"><a class="page-link" id="a-satu" onclick="fetchTableUser(${parseInt(result.current)},'${result.search}');">First</a></li>`;
+          let i = (parseInt(result.current) > 5 ? parseInt(result.current) - 4 : 1)
           if (i !== 1) {
             document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link">...</a></li>`;
           }
-          for (; i <= (Number(result.current) + 4) && i <= result.pages; i++) {  
+          for (; i <= (parseInt(result.current) + 4) && i <= result.pages; i++) {  
             if (i == 0) {
               document.querySelector('.pagination-list').innerHTML += `<li class="page-item active"><a class="page-link">${ i }</a></li>`;
             } else {
               document.querySelector('.pagination-list').innerHTML += `<li class="page-item"><a class="page-link" onclick="fetchTableUser(${i},'${result.search}');">${ i }</a></li>`;
             }
           }
-          if (Number(result.current) == result.pages) {
+          if (parseInt(result.current) == result.pages) {
             document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link">Last</a></li>`;
           } else {
             document.querySelector('.pagination-list').innerHTML += `<li class="page-item"><a class="page-link" onclick="fetchTableUser(${result.pages},'${result.search}');">Last</a></li>`;
@@ -352,11 +351,11 @@ document.querySelector('#btnSearch').addEventListener('click', (event) => {
 })
 
 /* fetch isi table - pagination */
-function fetchTableUser(page, search) {
+async function fetchTableUser(page, search) {
   console.log("Dari FETCH TABLE USER FE : "+page);
   console.log("Dari FETCH TABLE USER FE : "+search);
 
-  const response = fetch('/fetchTableUser/'+page+'/'+search, {
+  const response = await fetch('/fetchTableUser/'+page+'/'+search, {
   // const response = fetch(`/fetchTableUser/${page}/${search}`, {
     method: 'POST',
     headers: { 
@@ -368,6 +367,29 @@ function fetchTableUser(page, search) {
     return response.json();
   }).then(result => {
     console.log(result);
+    console.log(parseInt(result.current))
+
+    /* untuk pagination */
+    document.querySelector('.pagination-list').innerHTML = '';
+    if(result.result.length > 0) {
+      parseInt(result.current) == 1 ? document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link" id="a-satu">First</a></li>` : document.querySelector('.pagination-list').innerHTML += `<li class="page-item"><a class="page-link" id="a-satu" onclick="fetchTableUser(${parseInt(result.current)},'${result.search}');">First</a></li>`;
+      let i = (parseInt(result.current) > 5 ? parseInt(result.current) - 4 : 1)
+      if (i !== 1) {
+        document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link">...</a></li>`;
+      }
+      for (; i <= (parseInt(result.current) + 4) && i <= result.pages; i++) {  
+        if (i == 0) {
+          document.querySelector('.pagination-list').innerHTML += `<li class="page-item active"><a class="page-link">${ i }</a></li>`;
+        } else {
+          document.querySelector('.pagination-list').innerHTML += `<li class="page-item"><a class="page-link" onclick="fetchTableUser(${i},'${result.search}');">${ i }</a></li>`;
+        }
+      }
+      if (parseInt(result.current) == result.pages) {
+        document.querySelector('.pagination-list').innerHTML += `<li class="page-item disabled"><a class="page-link">Last</a></li>`;
+      } else {
+        document.querySelector('.pagination-list').innerHTML += `<li class="page-item"><a class="page-link" onclick="fetchTableUser(${result.pages},'${result.search}');">Last</a></li>`;
+      }
+    }    
 
     /* table */
     document.querySelector('.table-body').innerHTML = '';
